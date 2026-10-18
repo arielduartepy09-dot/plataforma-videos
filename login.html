@@ -29,21 +29,21 @@
       background-color: var(--bg-primary);
       color: var(--text-main);
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      min-height: 100vh;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
+      min-height: 100vh;
+      margin: 0;
       padding: 20px;
     }
 
-    .login-container {
+    .login-box {
+      background: var(--bg-surface);
+      padding: 36px 28px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
       width: 100%;
       max-width: 380px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 36px 28px;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
       text-align: center;
     }
@@ -56,10 +56,12 @@
       letter-spacing: -0.5px;
     }
 
-    .login-subtitle {
-      font-size: 0.85rem;
+    h2 {
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-size: 1.1rem;
       color: var(--text-muted);
-      margin-bottom: 28px;
+      font-weight: 500;
     }
 
     .input-group {
@@ -67,36 +69,36 @@
       text-align: left;
     }
 
-    .input-group label {
+    label {
       display: block;
+      margin-bottom: 8px;
       font-size: 0.82rem;
       font-weight: 600;
       color: #d1d5db;
-      margin-bottom: 8px;
     }
 
-    .input-group input {
+    input {
       width: 100%;
       padding: 12px 14px;
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
+      color: #fff;
       border-radius: var(--radius-md);
-      color: #ffffff;
       font-size: 0.95rem;
       outline: none;
       transition: var(--transition);
     }
 
-    .input-group input:focus {
+    input:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
     }
 
-    .btn-submit {
+    button {
       width: 100%;
       padding: 12px;
       background: var(--primary);
-      color: #ffffff;
+      color: white;
       border: none;
       border-radius: var(--radius-md);
       font-size: 0.95rem;
@@ -105,97 +107,101 @@
       transition: var(--transition);
     }
 
-    .btn-submit:hover {
+    button:hover {
       background: var(--primary-hover);
+      transform: translateY(-1px);
     }
 
-    .alert-msg {
-      margin-top: 18px;
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error {
+      color: #ff4b55;
+      background: rgba(229, 9, 20, 0.15);
+      border: 1px solid rgba(229, 9, 20, 0.4);
       font-size: 0.85rem;
       padding: 10px 14px;
       border-radius: 8px;
-      display: none;
       text-align: center;
+      margin-top: 16px;
+      display: none;
     }
 
-    .alert-msg.error {
-      display: block;
-      background: rgba(229, 9, 20, 0.15);
-      border: 1px solid rgba(229, 9, 20, 0.4);
-      color: #ff4b55;
-    }
-
-    .alert-msg.success {
-      display: block;
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      color: #10b981;
-    }
-
-    .btn-back-home {
+    .btn-back {
       display: inline-block;
-      margin-top: 22px;
+      margin-top: 20px;
       font-size: 0.82rem;
       color: var(--text-muted);
       text-decoration: none;
       transition: var(--transition);
     }
 
-    .btn-back-home:hover {
-      color: #ffffff;
+    .btn-back:hover {
+      color: #fff;
     }
   </style>
 </head>
 <body>
 
-  <div class="login-container">
+  <div class="login-box">
     <div class="brand-logo">HOTMEN</div>
-    <p class="login-subtitle">Acceso restringido al Panel de Control</p>
+    <h2>Panel de Administración</h2>
 
-    <form id="form-login" onsubmit="procesarLogin(event)">
+    <form id="form-login">
       <div class="input-group">
-        <label for="password">Contraseña de Administrador</label>
-        <input type="password" id="password" required placeholder="••••••••" autofocus>
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" required placeholder="Ingresa tu clave" autofocus>
       </div>
-
-      <button type="submit" id="btn-ingresar" class="btn-submit">Ingresar</button>
-      <div id="mensaje-alerta" class="alert-msg"></div>
+      <button type="submit" id="btn-ingresar">Ingresar</button>
+      <div id="mensaje-error" class="error"></div>
     </form>
 
-    <a href="index.html" class="btn-back-home">← Volver al catálogo público</a>
+    <a href="index.html" class="btn-back">← Volver al catálogo</a>
   </div>
 
   <script>
-    function procesarLogin(e) {
-      if (e) e.preventDefault();
-
-      const inputPassword = document.getElementById('password');
-      const mensajeAlerta = document.getElementById('mensaje-alerta');
+    document.getElementById('form-login').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const passwordIngresada = document.getElementById('password').value;
+      const mensajeError = document.getElementById('mensaje-error');
       const btnIngresar = document.getElementById('btn-ingresar');
 
-      const passwordIngresada = inputPassword.value.trim();
+      mensajeError.style.display = 'none';
+      btnIngresar.disabled = true;
+      btnIngresar.textContent = 'Verificando...';
 
-      // DEFINE AQUÍ TU CONTRASEÑA DE ADMINISTRADOR
-      const PASSWORD_ADMIN = 'admin123'; // Puedes cambiarla por la que prefieras
+      try {
+        // Petición al servidor Node.js utilizando ruta relativa (compatible con Render y Local)
+        const respuesta = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: passwordIngresada })
+        });
 
-      if (passwordIngresada === PASSWORD_ADMIN) {
-        mensajeAlerta.textContent = '¡Acceso concedido! Redirigiendo...';
-        mensajeAlerta.className = 'alert-msg success';
+        const resultado = await respuesta.json();
 
-        // Guardar sesión en ambos almacenamientos
-        sessionStorage.setItem('adminAutenticado', 'true');
-        localStorage.setItem('adminAutenticado', 'true');
-
-        setTimeout(() => {
+        if (resultado.exito) {
+          // Guardamos tanto en sessionStorage como en localStorage para garantizar el acceso a admin.html
+          sessionStorage.setItem('adminAutenticado', 'true');
+          localStorage.setItem('adminAutenticado', 'true');
+          
           window.location.href = 'admin.html';
-        }, 600);
-      } else {
-        mensajeAlerta.textContent = 'Contraseña incorrecta.';
-        mensajeAlerta.className = 'alert-msg error';
-        inputPassword.value = '';
-        inputPassword.focus();
+        } else {
+          mensajeError.style.display = 'block';
+          mensajeError.textContent = resultado.mensaje || 'Contraseña incorrecta.';
+          btnIngresar.disabled = false;
+          btnIngresar.textContent = 'Ingresar';
+        }
+      } catch (error) {
+        mensajeError.style.display = 'block';
+        mensajeError.textContent = 'No se pudo conectar con el servidor backend.';
+        btnIngresar.disabled = false;
+        btnIngresar.textContent = 'Ingresar';
       }
-    }
+    });
   </script>
 
 </body>
