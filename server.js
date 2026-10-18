@@ -3,10 +3,22 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const path = require('path'); // <-- Necesario para manejar las rutas de los archivos HTML
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+// ==========================================
+// ARCHIVOS ESTÁTICOS (Frontend)
+// ==========================================
+// Esto le dice a Express que sirva index.html, admin.html, etc., desde la raíz
+app.use(express.static(__dirname));
+
+// Ruta principal para que abra index.html automáticamente al entrar a la URL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // Conexión a tu base de datos en MongoDB Atlas apuntando a la base de datos "Prueba"
 const MONGO_URI = "mongodb+srv://arielduartepy09_db_user:Ariel1993@cluster0.bfhn8ch.mongodb.net/Prueba";
@@ -139,7 +151,8 @@ app.put('/api/videos/:id/like', async (req, res) => {
   }
 });
 
-const PORT = 3000;
+// Puerto dinámico para Render (o 3000 si se ejecuta localmente)
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en puerto ${PORT}`);
 });
