@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const bcrypt = require('bcryptjs');
 const path = require('path');
 
 const app = express();
@@ -25,30 +24,17 @@ mongoose.connect(MONGO_URI)
   .then(() => console.log('¡Conectado exitosamente a MongoDB Atlas!'))
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
-// Esquema y Modelo de Administrador
-const adminSchema = new mongoose.Schema({
-  usuario: { type: String, required: true, unique: true },
-  passwordHash: { type: String, required: true }
-});
-const Admin = mongoose.model('Admin', adminSchema);
-
-// Ruta de Inicio de Sesión (Login Seguro)
-app.post('/api/login', async (req, res) => {
+// ==========================================
+// RUTA DE INICIO DE SESIÓN (Login Directo y Seguro)
+// ==========================================
+app.post('/api/login', (req, res) => {
   try {
     const { password } = req.body;
-    let admin = await Admin.findOne({ usuario: 'admin' });
+    
+    // Contraseña de administrador configurada
+    const PASSWORD_ADMIN = 'Ariel1811';
 
-    // Si no existe, crea el admin con la contraseña "Ariel1811" cifrada
-    if (!admin) {
-      const salt = await bcrypt.genSalt(10);
-      const hash = await bcrypt.hash('Ariel1811', salt);
-      admin = new Admin({ usuario: 'admin', passwordHash: hash });
-      await admin.save();
-    }
-
-    const esValida = await bcrypt.compare(password, admin.passwordHash);
-
-    if (esValida) {
+    if (password === PASSWORD_ADMIN) {
       return res.json({ exito: true, mensaje: 'Acceso autorizado' });
     } else {
       return res.json({ exito: false, mensaje: 'Contraseña incorrecta' });
