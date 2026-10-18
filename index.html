@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
   <!-- 1. TÍTULO QUE APARECE EN GOOGLE -->
-  <title>Mi Plataforma | Videos y Contenido Exclusivo para Adultos (+18)</title>
+  <title>HOTMEN | Plataforma de Video Streaming & Contenido Exclusivo +18</title>
 
-  <!-- 2. DESCRIPCIÓN DE GOOGLE (Snippet) -->
-  <meta name="description" content="Plataforma de entretenimiento para adultos. Explora nuestro catálogo de videos exclusivos en HD, novedosos lanzamientos y contenido +18 actualizado diariamente.">
+  <!-- 2. DESCRIPCIÓN SEO (Snippet) -->
+  <meta name="description" content="Plataforma de entretenimiento para adultos. Explora nuestro catálogo de videos exclusivos en HD, lanzamientos novedosos y contenido +18 actualizado diariamente.">
 
   <!-- 3. CLASIFICACIÓN DE EDAD Y ADULTO (+18) -->
   <meta name="rating" content="RTA-5042-1996-1400-1577-RTA" />
@@ -15,42 +16,429 @@
   <meta name="rating" content="mature" />
 
   <!-- 4. ETIQUETAS OPEN GRAPH -->
-  <meta property="og:title" content="Mi Plataforma | Contenido para Adultos +18">
+  <meta property="og:title" content="HOTMEN | Contenido Exclusivo para Adultos +18">
   <meta property="og:description" content="Mira los mejores videos exclusivos para adultos en alta definición.">
   <meta property="og:type" content="website">
+
+  <!-- FUENTE INTER Y ICONOS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    * { box-sizing: border-box; }
-    body { background-color: #141414; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-    .contenedor { max-width: 1200px; margin: 0 auto; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-    h1 { margin: 0; color: #e50914; font-size: 24px; }
-    .grid-videos { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-    .tarjeta-video { background: #1f1f1f; border-radius: 8px; overflow: hidden; text-decoration: none; color: #fff; display: block; border: 1px solid #2a2a2a; transition: transform 0.2s; }
-    .tarjeta-video:hover { transform: translateY(-4px); }
-    .wrapper-img { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
-    .wrapper-img img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-    .info-video { padding: 12px; }
-    .titulo-video { font-size: 14px; margin: 0 0 8px 0; font-weight: bold; }
-    .metricas { font-size: 12px; color: #aaa; display: flex; gap: 12px; }
-    .sin-videos { text-align: center; color: #888; grid-column: 1 / -1; padding: 50px 0; }
+    :root {
+      --bg-primary: #0d0e12;
+      --bg-surface: #16181f;
+      --bg-surface-hover: #1f222c;
+      --primary: #e50914;
+      --primary-hover: #b80710;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* HEADER & NAVEGACIÓN */
+    .header-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 14, 18, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      background: linear-gradient(135deg, #e50914 0%, #ff4b55 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .badge-18 {
+      background: rgba(229, 9, 20, 0.15);
+      color: var(--primary);
+      border: 1px solid rgba(229, 9, 20, 0.3);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* BÚSQUEDA Y CONTROLES */
+    .search-bar {
+      flex: 1;
+      max-width: 480px;
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 10px 16px 10px 40px;
+      border-radius: 20px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-bar input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
+      background: #1c1f28;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .btn-admin {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-admin:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .main-container {
+      max-width: 1320px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 20px 60px 20px;
+      flex: 1;
+    }
+
+    /* FILTROS Y CATEGORÍAS */
+    .categories-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+      scrollbar-width: none;
+    }
+
+    .categories-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip-filter {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .chip-filter:hover, .chip-filter.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    /* GRID DE VIDEOS */
+    .grid-videos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 22px;
+    }
+
+    /* TARJETA DE VIDEO */
+    .tarjeta-video {
+      background: var(--bg-surface);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      text-decoration: none;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .tarjeta-video:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+      border-color: rgba(255, 255, 255, 0.2);
+      background: var(--bg-surface-hover);
+    }
+
+    .wrapper-img {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* Relación 16:9 */
+      background: #000;
+      overflow: hidden;
+    }
+
+    .wrapper-img img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .tarjeta-video:hover .wrapper-img img {
+      transform: scale(1.05);
+    }
+
+    .badge-popular {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(229, 9, 20, 0.9);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      backdrop-filter: blur(4px);
+    }
+
+    .info-video {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+    }
+
+    .titulo-video {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      color: #ffffff;
+    }
+
+    .metricas {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 10px;
+      margin-top: auto;
+    }
+
+    .metrica-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* ANUNCIOS EN GRID */
+    .card-ad {
+      min-height: 240px;
+      background: #000;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ESTADO VACÍO / ERRORES */
+    .status-container {
+      text-align: center;
+      grid-column: 1 / -1;
+      padding: 80px 20px;
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+    }
+
+    .status-container h3 {
+      font-size: 1.2rem;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .status-container p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* SKELETON LOADING ANIMATION */
+    .skeleton {
+      background: linear-gradient(90deg, #16181f 25%, #222530 50%, #16181f 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: var(--radius-md);
+      height: 260px;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-surface);
+      padding: 24px 20px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+
+    /* ADAPTABILIDAD MÓVIL */
+    @media (max-width: 640px) {
+      .header-container {
+        flex-wrap: wrap;
+        padding: 12px 16px;
+      }
+      .search-bar {
+        order: 3;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 6px;
+      }
+      .grid-videos {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <div class="contenedor">
-    <!-- BANNER ARRIBA DE LA CABECERA -->
-    <div id="slot-ad-header" style="text-align: center; margin-bottom: 15px;"></div>
+  <!-- HEADER NAVEGACIÓN -->
+  <header class="header-sticky">
+    <div class="header-container">
+      <a href="/" class="logo">
+        <span>HOTMEN</span>
+        <span class="badge-18">+18</span>
+      </a>
 
-    <header>
-      <h1>Mi Plataforma</h1>
-      <a href="login.html" style="color: #aaa; text-decoration: none; font-size: 13px;">Acceso Admin</a>
-    </header>
+      <!-- BARRA DE BÚSQUEDA -->
+      <div class="search-bar">
+        <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input type="text" id="input-buscar" placeholder="Buscar por título o categoría..." oninput="filtrarVideos()">
+      </div>
 
-    <main class="grid-videos" id="contenedor-grid"></main>
+      <a href="login.html" class="btn-admin">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+        </svg>
+        Admin
+      </a>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="main-container">
+    
+    <!-- SLOT PUBLICIDAD HEADER -->
+    <div id="slot-ad-header" style="text-align: center; margin-bottom: 20px;"></div>
+
+    <!-- FILTROS POR CATEGORÍA -->
+    <div class="categories-bar">
+      <button class="chip-filter active" onclick="filtrarCategoria('todos', this)">🔥 Todos</button>
+      <button class="chip-filter" onclick="filtrarCategoria('tendencias', this)">⚡ Tendencias</button>
+      <button class="chip-filter" onclick="filtrarCategoria('recientes', this)">🆕 Recientes</button>
+      <button class="chip-filter" onclick="filtrarCategoria('destacados', this)">⭐ Destacados</button>
+    </div>
+
+    <!-- GRID DE VIDEOS -->
+    <main class="grid-videos" id="contenedor-grid">
+      <!-- Skeletons durante carga -->
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </main>
   </div>
 
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2026 HOTMEN. Todos los derechos reservados. Contenido exclusivo para adultos (+18).</p>
+  </footer>
+
   <script>
+    let todosLosVideos = [];
+    let categoriaActual = 'todos';
+
     // --- REGISTRO DE VISITAS Y PAÍS DE ORIGEN ---
     async function registrarVisita() {
       let estadisticas = JSON.parse(localStorage.getItem('stats_visitas')) || {
@@ -103,58 +491,118 @@
       });
     }
 
-    // --- CARGAR VIDEOS DESDE MONGODB Y ANUNCIOS ENTRE ELLOS ---
+    // --- CARGAR VIDEOS DESDE LA API (Ruta relativa /api/videos) ---
     async function cargarVideos() {
       const grid = document.getElementById('contenedor-grid');
-      const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
 
       try {
-        const response = await fetch('http://localhost:3000/api/videos');
-        const videos = await response.json();
+        const response = await fetch('/api/videos');
+        
+        if (!response.ok) throw new Error('Error en el servidor');
 
-        if (!videos || videos.length === 0) {
-          grid.innerHTML = '<div class="sin-videos"><h3>No hay videos publicados todavía.</h3></div>';
+        todosLosVideos = await response.json();
+
+        if (!todosLosVideos || todosLosVideos.length === 0) {
+          grid.innerHTML = `
+            <div class="status-container">
+              <h3>No hay videos publicados todavía</h3>
+              <p>El contenido se actualizará muy pronto. ¡Vuelve a visitarnos!</p>
+            </div>`;
           return;
         }
 
-        grid.innerHTML = '';
-        videos.forEach((vid, index) => {
-          const tarjeta = document.createElement('a');
-          tarjeta.className = 'tarjeta-video';
-          tarjeta.href = `video.html?id=${vid._id}`;
-          
-          tarjeta.innerHTML = `
-            <div class="wrapper-img">
-              <img src="${vid.urlPortada || 'https://via.placeholder.com/320x180?text=Sin+Miniatura'}" alt="${vid.titulo}">
-            </div>
-            <div class="info-video">
-              <p class="titulo-video">${vid.titulo}</p>
-              <div class="metricas">
-                <span>👁️ ${vid.vistas || 0} reproducciones</span>
-                <span>👍 ${vid.likes || 0}</span>
-              </div>
-            </div>
-          `;
-          grid.appendChild(tarjeta);
+        renderizarGrid(todosLosVideos);
 
-          // Insertar anuncio cada 4 videos
-          if ((index + 1) % 4 === 0 && anuncios.betweenVideos) {
-            const slotAd = document.createElement('div');
-            slotAd.className = 'tarjeta-video';
-            slotAd.style.background = '#000';
-            slotAd.style.display = 'flex';
-            slotAd.style.alignItems = 'center';
-            slotAd.style.justifyContent = 'center';
-            slotAd.id = `ad-grid-${index}`;
-            grid.appendChild(slotAd);
-            
-            setTimeout(() => ejecutarScriptAnuncio(`ad-grid-${index}`, anuncios.betweenVideos), 100);
-          }
-        });
       } catch (error) {
         console.error('Error al obtener los videos:', error);
-        grid.innerHTML = '<div class="sin-videos"><h3>Error al conectar con el servidor para cargar los videos.</h3></div>';
+        grid.innerHTML = `
+          <div class="status-container">
+            <h3>Error de conexión con el servidor</h3>
+            <p>No pudimos obtener la lista de videos. Intenta recargar la página.</p>
+          </div>`;
       }
+    }
+
+    // --- RENDERIZAR GRID DE VIDEOS CON ANUNCIOS ---
+    function renderizarGrid(listaVideos) {
+      const grid = document.getElementById('contenedor-grid');
+      const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
+      
+      grid.innerHTML = '';
+
+      if (listaVideos.length === 0) {
+        grid.innerHTML = `
+          <div class="status-container">
+            <h3>No se encontraron resultados</h3>
+            <p>Intenta con otros términos de búsqueda o selecciona otra categoría.</p>
+          </div>`;
+        return;
+      }
+
+      listaVideos.forEach((vid, index) => {
+        const tarjeta = document.createElement('a');
+        tarjeta.className = 'tarjeta-video';
+        tarjeta.href = `video.html?id=${vid._id}`;
+        
+        const esPopular = (vid.vistas || 0) > 10;
+
+        tarjeta.innerHTML = `
+          <div class="wrapper-img">
+            ${esPopular ? '<span class="badge-popular">🔥 Popular</span>' : ''}
+            <img src="${vid.urlPortada || 'https://via.placeholder.com/640x360/16181f/9ca3af?text=HOTMEN'}" alt="${vid.titulo}" loading="lazy">
+          </div>
+          <div class="info-video">
+            <h2 class="titulo-video">${vid.titulo}</h2>
+            <div class="metricas">
+              <span class="metrica-item">👁️ ${vid.vistas || 0} vistas</span>
+              <span class="metrica-item">👍 ${vid.likes || 0}</span>
+            </div>
+          </div>
+        `;
+        grid.appendChild(tarjeta);
+
+        // Insertar anuncio cada 4 videos
+        if ((index + 1) % 4 === 0 && anuncios.betweenVideos) {
+          const slotAd = document.createElement('div');
+          slotAd.className = 'card-ad';
+          slotAd.id = `ad-grid-${index}`;
+          grid.appendChild(slotAd);
+          
+          setTimeout(() => ejecutarScriptAnuncio(`ad-grid-${index}`, anuncios.betweenVideos), 100);
+        }
+      });
+    }
+
+    // --- FILTRADO EN TIEMPO REAL POR BÚSQUEDA ---
+    function filtrarVideos() {
+      const query = document.getElementById('input-buscar').value.toLowerCase().trim();
+      
+      const filtrados = todosLosVideos.filter(vid => {
+        const coincideTitulo = vid.titulo.toLowerCase().includes(query);
+        const coincideCategoria = vid.categoria ? vid.categoria.toLowerCase().includes(query) : false;
+        return coincideTitulo || coincideCategoria;
+      });
+
+      renderizarGrid(filtrados);
+    }
+
+    // --- FILTRADO POR CATEGORÍAS ---
+    function filtrarCategoria(categoria, btn) {
+      document.querySelectorAll('.chip-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      categoriaActual = categoria;
+
+      let copiaVideos = [...todosLosVideos];
+
+      if (categoria === 'tendencias') {
+        copiaVideos.sort((a, b) => (b.vistas || 0) - (a.vistas || 0));
+      } else if (categoria === 'recientes') {
+        copiaVideos.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+      } else if (categoria === 'destacados') {
+        copiaVideos.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+      }
+
+      renderizarGrid(copiaVideos);
     }
 
     // Inicialización al cargar la página
