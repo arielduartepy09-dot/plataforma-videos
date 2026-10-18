@@ -109,11 +109,6 @@
       background: var(--primary-hover);
     }
 
-    .btn-submit:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
     .alert-msg {
       margin-top: 18px;
       font-size: 0.85rem;
@@ -171,55 +166,34 @@
   </div>
 
   <script>
-    async function procesarLogin(e) {
+    function procesarLogin(e) {
       if (e) e.preventDefault();
 
       const inputPassword = document.getElementById('password');
       const mensajeAlerta = document.getElementById('mensaje-alerta');
       const btnIngresar = document.getElementById('btn-ingresar');
 
-      const passwordIngresada = inputPassword.value;
+      const passwordIngresada = inputPassword.value.trim();
 
-      if (!passwordIngresada) return;
+      // DEFINE AQUÍ TU CONTRASEÑA DE ADMINISTRADOR
+      const PASSWORD_ADMIN = 'admin123'; // Puedes cambiarla por la que prefieras
 
-      // Actualizar UI
-      mensajeAlerta.className = 'alert-msg';
-      mensajeAlerta.style.display = 'none';
-      btnIngresar.disabled = true;
-      btnIngresar.textContent = 'Verificando...';
+      if (passwordIngresada === PASSWORD_ADMIN) {
+        mensajeAlerta.textContent = '¡Acceso concedido! Redirigiendo...';
+        mensajeAlerta.className = 'alert-msg success';
 
-      try {
-        const respuesta = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: passwordIngresada })
-        });
+        // Guardar sesión en ambos almacenamientos
+        sessionStorage.setItem('adminAutenticado', 'true');
+        localStorage.setItem('adminAutenticado', 'true');
 
-        const resultado = await respuesta.json();
-
-        if (respuesta.ok && (resultado.exito || resultado.success || respuesta.status === 200)) {
-          mensajeAlerta.textContent = '¡Acceso concedido! Redirigiendo...';
-          mensajeAlerta.className = 'alert-msg success';
-
-          // Guardar credencial en ambos almacenamientos del navegador
-          sessionStorage.setItem('adminAutenticado', 'true');
-          localStorage.setItem('adminAutenticado', 'true');
-
-          setTimeout(() => {
-            window.location.href = 'admin.html';
-          }, 600);
-        } else {
-          mensajeAlerta.textContent = resultado.mensaje || resultado.error || 'Contraseña incorrecta.';
-          mensajeAlerta.className = 'alert-msg error';
-          btnIngresar.disabled = false;
-          btnIngresar.textContent = 'Ingresar';
-        }
-      } catch (error) {
-        console.error('Error de login:', error);
-        mensajeAlerta.textContent = 'Error de conexión con el servidor.';
+        setTimeout(() => {
+          window.location.href = 'admin.html';
+        }, 600);
+      } else {
+        mensajeAlerta.textContent = 'Contraseña incorrecta.';
         mensajeAlerta.className = 'alert-msg error';
-        btnIngresar.disabled = false;
-        btnIngresar.textContent = 'Ingresar';
+        inputPassword.value = '';
+        inputPassword.focus();
       }
     }
   </script>
