@@ -194,7 +194,6 @@
       btnIngresar.textContent = 'Verificando...';
 
       try {
-        // Petición con ruta relativa /api/login para local y producción (Render)
         const respuesta = await fetch('/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -203,18 +202,20 @@
 
         const resultado = await respuesta.json();
 
-        if (respuesta.ok && resultado.exito) {
+        // Validar si la respuesta fue exitosa (soporta tanto resultado.exito como respuesta.ok)
+        if (respuesta.ok && (resultado.exito || resultado.success || respuesta.status === 200)) {
           mensajeAlerta.textContent = '¡Acceso concedido! Redirigiendo...';
           mensajeAlerta.className = 'alert-msg success';
 
-          // Guardar estado de autenticación en sesión
+          // Guardar el estado de autenticación en AMBOS almacenamientos para evitar incompatibilidades con admin.html
           sessionStorage.setItem('adminAutenticado', 'true');
+          localStorage.setItem('adminAutenticado', 'true');
 
           setTimeout(() => {
             window.location.href = 'admin.html';
-          }, 800);
+          }, 600);
         } else {
-          mensajeAlerta.textContent = resultado.mensaje || 'Contraseña incorrecta.';
+          mensajeAlerta.textContent = resultado.mensaje || resultado.error || 'Contraseña incorrecta.';
           mensajeAlerta.className = 'alert-msg error';
           btnIngresar.disabled = false;
           btnIngresar.textContent = 'Ingresar';
