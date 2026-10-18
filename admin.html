@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administración de Videos</title>
+  <title>Administración de Videos | HOTMEN</title>
   <style>
     body { display: none; background-color: #141414; color: #e5e5e5; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
     * { box-sizing: border-box; }
@@ -41,7 +41,6 @@
     .btn-cerrar-modal { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
     .btn-cerrar-modal:hover { color: #fff; }
   </style>
-  <!-- Cargar librería de gráficos -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -214,7 +213,7 @@
     cargarAnunciosAdmin();
 
     // --- SEGURIDAD Y SESIÓN ---
-    if (sessionStorage.getItem('adminAutenticado') !== 'true') {
+    if (sessionStorage.getItem('adminAutenticado') !== 'true' && localStorage.getItem('adminAutenticado') !== 'true') {
       window.location.href = 'login.html';
     } else {
       document.body.style.display = 'block';
@@ -222,6 +221,7 @@
 
     function cerrarSesion() {
       sessionStorage.removeItem('adminAutenticado');
+      localStorage.removeItem('adminAutenticado');
       window.location.href = 'login.html';
     }
 
@@ -299,10 +299,10 @@
       });
     }
 
-    // --- CARGAR Y RENDERIZAR VIDEOS DESDE MONGODB ---
+    // --- CARGAR Y RENDERIZAR VIDEOS DESDE MONGODB (Rutas Relativas) ---
     async function renderizar() {
       try {
-        const response = await fetch('http://localhost:3000/api/videos');
+        const response = await fetch('/api/videos');
         const lista = await response.json();
         const tbody = document.getElementById('lista-admin');
         tbody.innerHTML = '';
@@ -335,7 +335,7 @@
       };
 
       try {
-        const response = await fetch('http://localhost:3000/api/videos', {
+        const response = await fetch('/api/videos', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(nuevo)
@@ -360,7 +360,7 @@
     async function eliminar(id) {
       if (confirm('¿Eliminar video de la base de datos?')) {
         try {
-          const response = await fetch(`http://localhost:3000/api/videos/${id}`, {
+          const response = await fetch(`/api/videos/${id}`, {
             method: 'DELETE'
           });
           if (response.ok) {
