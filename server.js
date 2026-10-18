@@ -5,7 +5,10 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-app.use(express.json());
+
+// Aumentamos el límite del body para permitir miniaturas en Base64 pesadas
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
 
 // ==========================================
@@ -25,13 +28,11 @@ mongoose.connect(MONGO_URI)
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
 // ==========================================
-// RUTA DE INICIO DE SESIÓN (Login Directo y Seguro)
+// RUTA DE INICIO DE SESIÓN
 // ==========================================
 app.post('/api/login', (req, res) => {
   try {
     const { password } = req.body;
-    
-    // Contraseña de administrador configurada
     const PASSWORD_ADMIN = 'Ariel1811';
 
     if (password === PASSWORD_ADMIN) {
@@ -72,7 +73,7 @@ app.post('/api/videos', async (req, res) => {
     res.status(201).json({ mensaje: '¡Video guardado exitosamente!', video: nuevoVideo });
   } catch (error) {
     console.error('Error al guardar el video:', error);
-    res.status(500).json({ error: 'Error interno al guardar el video' });
+    res.status(500).json({ error: 'Error interno al guardar el video en la base de datos' });
   }
 });
 
