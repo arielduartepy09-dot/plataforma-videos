@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acceso Administrador | HOTMEN</title>
   
-  <!-- FUENTE INTER -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -24,11 +23,7 @@
       --transition: all 0.25s ease;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background-color: var(--bg-primary);
@@ -112,13 +107,11 @@
 
     .btn-submit:hover {
       background: var(--primary-hover);
-      transform: translateY(-1px);
     }
 
     .btn-submit:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      transform: none;
     }
 
     .alert-msg {
@@ -164,7 +157,7 @@
     <div class="brand-logo">HOTMEN</div>
     <p class="login-subtitle">Acceso restringido al Panel de Control</p>
 
-    <form id="form-login">
+    <form id="form-login" onsubmit="procesarLogin(event)">
       <div class="input-group">
         <label for="password">Contraseña de Administrador</label>
         <input type="password" id="password" required placeholder="••••••••" autofocus>
@@ -178,8 +171,8 @@
   </div>
 
   <script>
-    document.getElementById('form-login').addEventListener('submit', async function(e) {
-      e.preventDefault();
+    async function procesarLogin(e) {
+      if (e) e.preventDefault();
 
       const inputPassword = document.getElementById('password');
       const mensajeAlerta = document.getElementById('mensaje-alerta');
@@ -187,7 +180,9 @@
 
       const passwordIngresada = inputPassword.value;
 
-      // Reiniciar estados visuales
+      if (!passwordIngresada) return;
+
+      // Actualizar UI
       mensajeAlerta.className = 'alert-msg';
       mensajeAlerta.style.display = 'none';
       btnIngresar.disabled = true;
@@ -202,12 +197,11 @@
 
         const resultado = await respuesta.json();
 
-        // Validar si la respuesta fue exitosa (soporta tanto resultado.exito como respuesta.ok)
         if (respuesta.ok && (resultado.exito || resultado.success || respuesta.status === 200)) {
           mensajeAlerta.textContent = '¡Acceso concedido! Redirigiendo...';
           mensajeAlerta.className = 'alert-msg success';
 
-          // Guardar el estado de autenticación en AMBOS almacenamientos para evitar incompatibilidades con admin.html
+          // Guardar credencial en ambos almacenamientos del navegador
           sessionStorage.setItem('adminAutenticado', 'true');
           localStorage.setItem('adminAutenticado', 'true');
 
@@ -221,12 +215,13 @@
           btnIngresar.textContent = 'Ingresar';
         }
       } catch (error) {
-        mensajeAlerta.textContent = 'Error al conectar con el servidor backend.';
+        console.error('Error de login:', error);
+        mensajeAlerta.textContent = 'Error de conexión con el servidor.';
         mensajeAlerta.className = 'alert-msg error';
         btnIngresar.disabled = false;
         btnIngresar.textContent = 'Ingresar';
       }
-    });
+    }
   </script>
 
 </body>
