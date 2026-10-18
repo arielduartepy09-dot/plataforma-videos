@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-const path = require('path'); // <-- Necesario para manejar las rutas de los archivos HTML
+const path = require('path');
 
 const app = express();
 app.use(express.json());
@@ -12,15 +12,13 @@ app.use(cors());
 // ==========================================
 // ARCHIVOS ESTÁTICOS (Frontend)
 // ==========================================
-// Esto le dice a Express que sirva index.html, admin.html, etc., desde la raíz
 app.use(express.static(__dirname));
 
-// Ruta principal para que abra index.html automáticamente al entrar a la URL
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Conexión a tu base de datos en MongoDB Atlas apuntando a la base de datos "Prueba"
+// Conexión a MongoDB Atlas
 const MONGO_URI = "mongodb+srv://arielduartepy09_db_user:Ariel1993@cluster0.bfhn8ch.mongodb.net/Prueba";
 
 mongoose.connect(MONGO_URI)
@@ -36,12 +34,11 @@ const Admin = mongoose.model('Admin', adminSchema);
 
 // Ruta de Inicio de Sesión (Login Seguro)
 app.post('/api/login', async (req, res) => {
-  const { password } = req.body;
-
   try {
+    const { password } = req.body;
     let admin = await Admin.findOne({ usuario: 'admin' });
 
-    // Si es la primera vez, crea el admin automáticamente con la contraseña "Ariel1811" cifrada
+    // Si no existe, crea el admin con la contraseña "Ariel1811" cifrada
     if (!admin) {
       const salt = await bcrypt.genSalt(10);
       const hash = await bcrypt.hash('Ariel1811', salt);
@@ -49,21 +46,21 @@ app.post('/api/login', async (req, res) => {
       await admin.save();
     }
 
-    // Compara la contraseña ingresada de forma segura con el hash de la base de datos
     const esValida = await bcrypt.compare(password, admin.passwordHash);
 
     if (esValida) {
-      res.json({ exito: true, mensaje: 'Acceso autorizado' });
+      return res.json({ exito: true, mensaje: 'Acceso autorizado' });
     } else {
-      res.status(401).json({ exito: false, mensaje: 'Contraseña incorrecta' });
+      return res.json({ exito: false, mensaje: 'Contraseña incorrecta' });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Error en el servidor' });
+    console.error('Error en el login:', error);
+    return res.status(500).json({ exito: false, mensaje: 'Error interno en el servidor' });
   }
 });
 
 // ==========================================
-// ESQUEMA Y MODELO DE VIDEO (Actualizado con vistas y likes)
+// ESQUEMA Y MODELO DE VIDEO
 // ==========================================
 const videoSchema = new mongoose.Schema({
   titulo: { type: String, required: true },
@@ -82,7 +79,6 @@ const Video = mongoose.model('Video', videoSchema);
 // RUTAS DE GESTIÓN DE VIDEOS
 // ==========================================
 
-// 1. Guardar un nuevo video
 app.post('/api/videos', async (req, res) => {
   try {
     const nuevoVideo = new Video(req.body);
@@ -94,7 +90,6 @@ app.post('/api/videos', async (req, res) => {
   }
 });
 
-// 2. Obtener la lista de todos los videos
 app.get('/api/videos', async (req, res) => {
   try {
     const videos = await Video.find().sort({ fechaCreacion: -1 });
@@ -105,7 +100,6 @@ app.get('/api/videos', async (req, res) => {
   }
 });
 
-// 3. Eliminar un video por su ID
 app.delete('/api/videos/:id', async (req, res) => {
   try {
     await Video.findByIdAndDelete(req.params.id);
@@ -116,7 +110,6 @@ app.delete('/api/videos/:id', async (req, res) => {
   }
 });
 
-// 4. Incrementar reproducciones (vistas)
 app.put('/api/videos/:id/vista', async (req, res) => {
   try {
     const video = await Video.findByIdAndUpdate(
@@ -132,9 +125,8 @@ app.put('/api/videos/:id/vista', async (req, res) => {
   }
 });
 
-// 5. Incrementar o decrementar likes
 app.put('/api/videos/:id/like', async (req, res) => {
-  const { accion } = req.body; // 'sumar' o 'restar'
+  const { accion } = req.body;
   const incremento = accion === 'sumar' ? 1 : -1;
 
   try {
@@ -151,7 +143,6 @@ app.put('/api/videos/:id/like', async (req, res) => {
   }
 });
 
-// Puerto dinámico para Render (o 3000 si se ejecuta localmente)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
