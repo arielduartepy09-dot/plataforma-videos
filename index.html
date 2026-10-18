@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 1. TÍTULO QUE APARECE EN GOOGLE -->
+  <title>Mi Plataforma | Videos y Contenido Exclusivo para Adultos (+18)</title>
+
+  <!-- 2. DESCRIPCIÓN DE GOOGLE (Snippet) -->
+  <meta name="description" content="Plataforma de entretenimiento para adultos. Explora nuestro catálogo de videos exclusivos en HD, novedosos lanzamientos y contenido +18 actualizado diariamente.">
+
+  <!-- 3. CLASIFICACIÓN DE EDAD Y ADULTO (+18) -->
+  <meta name="rating" content="RTA-5042-1996-1400-1577-RTA" />
+  <meta name="rating" content="adult" />
+  <meta name="rating" content="mature" />
+
+  <!-- 4. ETIQUETAS OPEN GRAPH -->
+  <meta property="og:title" content="Mi Plataforma | Contenido para Adultos +18">
+  <meta property="og:description" content="Mira los mejores videos exclusivos para adultos en alta definición.">
+  <meta property="og:type" content="website">
+  
+  <style>
+    * { box-sizing: border-box; }
+    body { background-color: #141414; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+    .contenedor { max-width: 1200px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+    h1 { margin: 0; color: #e50914; font-size: 24px; }
+    .grid-videos { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .tarjeta-video { background: #1f1f1f; border-radius: 8px; overflow: hidden; text-decoration: none; color: #fff; display: block; border: 1px solid #2a2a2a; transition: transform 0.2s; }
+    .tarjeta-video:hover { transform: translateY(-4px); }
+    .wrapper-img { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
+    .wrapper-img img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+    .info-video { padding: 12px; }
+    .titulo-video { font-size: 14px; margin: 0 0 8px 0; font-weight: bold; }
+    .metricas { font-size: 12px; color: #aaa; display: flex; gap: 12px; }
+    .sin-videos { text-align: center; color: #888; grid-column: 1 / -1; padding: 50px 0; }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor">
+    <!-- BANNER ARRIBA DE LA CABECERA -->
+    <div id="slot-ad-header" style="text-align: center; margin-bottom: 15px;"></div>
+
+    <header>
+      <h1>Mi Plataforma</h1>
+      <a href="login.html" style="color: #aaa; text-decoration: none; font-size: 13px;">Acceso Admin</a>
+    </header>
+
+    <main class="grid-videos" id="contenedor-grid"></main>
+  </div>
+
+  <script>
+    // --- REGISTRO DE VISITAS Y PAÍS DE ORIGEN ---
+    async function registrarVisita() {
+      let estadisticas = JSON.parse(localStorage.getItem('stats_visitas')) || {
+        historial: [],
+        paises: {}
+      };
+
+      estadisticas.historial.push(new Date().getTime());
+
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        if (res.ok) {
+          const data = await res.json();
+          const pais = data.country_name || 'Desconocido';
+          estadisticas.paises[pais] = (estadisticas.paises[pais] || 0) + 1;
+        } else {
+          estadisticas.paises['Desconocido'] = (estadisticas.paises['Desconocido'] || 0) + 1;
+        }
+      } catch (e) {
+        estadisticas.paises['Desconocido'] = (estadisticas.paises['Desconocido'] || 0) + 1;
+      }
+
+      localStorage.setItem('stats_visitas', JSON.stringify(estadisticas));
+    }
+
+    // --- CARGAR ANUNCIOS Y POPUNDER ---
+    function inyectarAnunciosIndex() {
+      const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
+
+      if (anuncios.header) {
+        ejecutarScriptAnuncio('slot-ad-header', anuncios.header);
+      }
+
+      if (anuncios.popunder) {
+        ejecutarScriptAnuncio(document.body, anuncios.popunder);
+      }
+    }
+
+    function ejecutarScriptAnuncio(contenedor, codigoHTML) {
+      const el = typeof contenedor === 'string' ? document.getElementById(contenedor) : contenedor;
+      if (!el || !codigoHTML) return;
+      
+      el.innerHTML = codigoHTML;
+      const scripts = el.querySelectorAll('script');
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+      });
+    }
+
+    // --- CARGAR VIDEOS DESDE MONGODB Y ANUNCIOS ENTRE ELLOS ---
+    async function cargarVideos() {
+      const grid = document.getElementById('contenedor-grid');
+      const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
+
+      try {
+        const response = await fetch('http://localhost:3000/api/videos');
+        const videos = await response.json();
+
+        if (!videos || videos.length === 0) {
+          grid.innerHTML = '<div class="sin-videos"><h3>No hay videos publicados todavía.</h3></div>';
+          return;
+        }
+
+        grid.innerHTML = '';
+        videos.forEach((vid, index) => {
+          const tarjeta = document.createElement('a');
+          tarjeta.className = 'tarjeta-video';
+          tarjeta.href = `video.html?id=${vid._id}`;
+          
+          tarjeta.innerHTML = `
+            <div class="wrapper-img">
+              <img src="${vid.urlPortada || 'https://via.placeholder.com/320x180?text=Sin+Miniatura'}" alt="${vid.titulo}">
+            </div>
+            <div class="info-video">
+              <p class="titulo-video">${vid.titulo}</p>
+              <div class="metricas">
+                <span>👁️ ${vid.vistas || 0} reproducciones</span>
+                <span>👍 ${vid.likes || 0}</span>
+              </div>
+            </div>
+          `;
+          grid.appendChild(tarjeta);
+
+          // Insertar anuncio cada 4 videos
+          if ((index + 1) % 4 === 0 && anuncios.betweenVideos) {
+            const slotAd = document.createElement('div');
+            slotAd.className = 'tarjeta-video';
+            slotAd.style.background = '#000';
+            slotAd.style.display = 'flex';
+            slotAd.style.alignItems = 'center';
+            slotAd.style.justifyContent = 'center';
+            slotAd.id = `ad-grid-${index}`;
+            grid.appendChild(slotAd);
+            
+            setTimeout(() => ejecutarScriptAnuncio(`ad-grid-${index}`, anuncios.betweenVideos), 100);
+          }
+        });
+      } catch (error) {
+        console.error('Error al obtener los videos:', error);
+        grid.innerHTML = '<div class="sin-videos"><h3>Error al conectar con el servidor para cargar los videos.</h3></div>';
+      }
+    }
+
+    // Inicialización al cargar la página
+    registrarVisita();
+    inyectarAnunciosIndex();
+    cargarVideos();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pestana-titulo">Reproductor de Video</title>
+
+  <!-- Meta etiquetas para SEO y contenido para adultos (+18) -->
+  <meta name="description" content="Reproductor de video exclusivo en alta definición.">
+  <meta name="rating" content="RTA-5042-1996-1400-1577-RTA" />
+  <meta name="rating" content="adult" />
+  <meta name="rating" content="mature" />
+
+  <style>
+    * { box-sizing: border-box; }
+    body { background-color: #141414; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+    .contenedor { max-width: 900px; margin: 0 auto; }
+    .btn-volver { display: inline-block; color: #aaa; text-decoration: none; margin-bottom: 15px; font-size: 14px; }
+    .btn-volver:hover { color: #fff; }
+    
+    .box-video { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 8px; overflow: hidden; }
+    .box-video video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    
+    .encabezado-video { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+    h1 { font-size: 20px; margin: 0; }
+    
+    .btn-like { background: #222; border: 1px solid #444; color: #fff; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px; transition: background 0.2s; }
+    .btn-like:hover { background: #333; }
+    .btn-like.activo { background: #e50914; border-color: #e50914; }
+    
+    .detalles { margin-top: 15px; background: #1f1f1f; padding: 15px; border-radius: 8px; border: 1px solid #2a2a2a; }
+    .contador-vistas { font-size: 13px; color: #aaa; margin-bottom: 10px; font-weight: bold; }
+    .descripcion { font-size: 14px; color: #ddd; line-height: 1.5; white-space: pre-line; margin: 0; }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor">
+    <a href="index.html" class="btn-volver">← Volver al catálogo</a>
+    
+    <!-- REPRODUCTOR CON CAPA DE ANUNCIO BONIFICADO/PREROLL -->
+    <div style="position: relative;">
+      <div id="overlay-rewarded" style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.95); z-index: 10; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+        <div id="slot-ad-rewarded" style="margin-bottom: 15px; text-align: center;"></div>
+        <button onclick="cerrarAnuncioBonificado()" style="background: #e50914; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer;">
+          Continuar al Video ▶
+        </button>
+      </div>
+
+      <div class="box-video">
+        <video id="reproductor" controls autoplay>
+          <source id="fuente-video" src="" type="video/mp4">
+          Tu navegador no soporta la reproducción de video.
+        </video>
+      </div>
+    </div>
+
+    <div class="encabezado-video">
+      <h1 id="titulo-display">Cargando...</h1>
+      <button id="btn-like" class="btn-like" onclick="darLike()">👍 <span id="num-likes">0</span></button>
+    </div>
+
+    <!-- ESPACIO DE PUBLICIDAD BAJO EL TÍTULO -->
+    <div id="slot-ad-under-title" style="margin: 15px 0; text-align: center;"></div>
+
+    <div class="detalles">
+      <div id="vistas-display" class="contador-vistas">0 reproducciones</div>
+      <p id="descripcion-display" class="descripcion"></p>
+    </div>
+  </div>
+
+  <script>
+    // --- MANEJO DE ANUNCIOS EN EL REPRODUCTOR ---
+    function cargarAnunciosReproductor() {
+      const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
+
+      if (anuncios.rewarded) {
+        const overlay = document.getElementById('overlay-rewarded');
+        overlay.style.display = 'flex';
+        ejecutarScriptAnuncio('slot-ad-rewarded', anuncios.rewarded);
+        
+        const vid = document.getElementById('reproductor');
+        vid.pause();
+      }
+
+      if (anuncios.underTitle) {
+        ejecutarScriptAnuncio('slot-ad-under-title', anuncios.underTitle);
+      }
+
+      if (anuncios.popunder) {
+        ejecutarScriptAnuncio(document.body, anuncios.popunder);
+      }
+    }
+
+    function cerrarAnuncioBonificado() {
+      document.getElementById('overlay-rewarded').style.display = 'none';
+      const vid = document.getElementById('reproductor');
+      vid.play();
+    }
+
+    function ejecutarScriptAnuncio(contenedor, codigoHTML) {
+      const el = typeof contenedor === 'string' ? document.getElementById(contenedor) : contenedor;
+      if (!el || !codigoHTML) return;
+      
+      el.innerHTML = codigoHTML;
+      const scripts = el.querySelectorAll('script');
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+      });
+    }
+
+    cargarAnunciosReproductor();
+
+    // --- CARGAR DATOS DEL VIDEO DESDE MONGODB ---
+    const params = new URLSearchParams(window.location.search);
+    const videoId = params.get('id');
+
+    async function registrarReproduccion(id) {
+      try {
+        await fetch(`http://localhost:3000/api/videos/${id}/vista`, { method: 'PUT' });
+      } catch (e) {
+        console.error('Error incrementando reproducciones:', e);
+      }
+    }
+
+    async function cargarVideoActual() {
+      if (!videoId) {
+        document.getElementById('titulo-display').textContent = 'Video no encontrado.';
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:3000/api/videos');
+        const videos = await response.json();
+        
+        const videoActual = videos.find(v => v._id === videoId);
+
+        if (videoActual) {
+          // Registrar la vista automáticamente en MongoDB al abrir el reproductor
+          registrarReproduccion(videoId);
+
+          // Cargar datos en la página
+          document.getElementById('fuente-video').src = videoActual.urlVideo;
+          document.getElementById('titulo-display').textContent = videoActual.titulo;
+          document.getElementById('pestana-titulo').textContent = videoActual.titulo;
+          document.getElementById('descripcion-display').textContent = videoActual.descripcion || 'Sin descripción.';
+          document.getElementById('vistas-display').textContent = `${(videoActual.vistas || 0).toLocaleString()} reproducciones`;
+          document.getElementById('num-likes').textContent = videoActual.likes || 0;
+          document.getElementById('reproductor').load();
+
+          if (localStorage.getItem(`like_${videoId}`) === 'true') {
+            document.getElementById('btn-like').classList.add('activo');
+          }
+        } else {
+          document.getElementById('titulo-display').textContent = 'Video no encontrado.';
+        }
+      } catch (error) {
+        console.error('Error al cargar el video:', error);
+        document.getElementById('titulo-display').textContent = 'Error al conectar con el servidor.';
+      }
+    }
+
+    // Función para dar Like conectada a MongoDB
+    async function darLike() {
+      if (!videoId) return;
+
+      const btn = document.getElementById('btn-like');
+      const numLikesEl = document.getElementById('num-likes');
+      const yaDioLike = localStorage.getItem(`like_${videoId}`) === 'true';
+      const accion = yaDioLike ? 'restar' : 'sumar';
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/videos/${videoId}/like`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accion })
+        });
+        const data = await response.json();
+
+        if (data.exito) {
+          numLikesEl.textContent = data.likes;
+          if (yaDioLike) {
+            localStorage.removeItem(`like_${videoId}`);
+            btn.classList.remove('activo');
+          } else {
+            localStorage.setItem(`like_${videoId}`, 'true');
+            btn.classList.add('activo');
+          }
+        }
+      } catch (e) {
+        console.error('Error al actualizar likes:', e);
+      }
+    }
+
+    cargarVideoActual();
+  </script>
+
+</body>
+</html>
