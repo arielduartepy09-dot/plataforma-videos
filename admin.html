@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración de Videos | HOTMEN</title>
+  <style>
+    body { display: none; background-color: #141414; color: #e5e5e5; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+    * { box-sizing: border-box; }
+    .contenedor { max-width: 1100px; margin: 0 auto; }
+    .header-admin { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+    h1 { margin: 0; color: #fff; font-size: 22px; }
+    
+    .acciones-header { display: flex; gap: 10px; }
+    .btn-ads { background: #28a745; color: #fff; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .btn-ads:hover { background: #218838; }
+    .btn-logout { background: #333; color: #fff; border: 1px solid #555; padding: 8px 14px; border-radius: 4px; cursor: pointer; }
+    .btn-logout:hover { background: #444; }
+
+    .grid-admin { display: grid; grid-template-columns: 420px 1fr; gap: 20px; }
+    .card { background: #1f1f1f; padding: 20px; border-radius: 8px; border: 1px solid #333; }
+    .grupo-form { margin-bottom: 15px; }
+    .grupo-form label { display: block; margin-bottom: 5px; font-size: 13px; color: #aaa; font-weight: bold; }
+    .grupo-form input, .grupo-form textarea { width: 100%; padding: 10px; background: #2b2b2b; border: 1px solid #444; color: #fff; border-radius: 4px; font-family: inherit; }
+    .btn-guardar { width: 100%; padding: 12px; background: #0061fe; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; }
+    
+    .selector-miniaturas { margin-bottom: 15px; display: none; }
+    .grid-opciones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+    .opcion-thumb { width: 100%; height: 65px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent; opacity: 0.7; }
+    .opcion-thumb.seleccionada { border-color: #0061fe; opacity: 1; transform: scale(1.03); }
+    
+    table { width: 100%; border-collapse: collapse; background: #1f1f1f; border-radius: 8px; overflow: hidden; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; font-size: 13px; }
+    th { background: #2a2a2a; }
+    .thumb-mini { width: 70px; height: 40px; object-fit: cover; border-radius: 4px; background: #000; }
+    .btn-eliminar { background: #dc3545; border: none; color: white; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+
+    /* ESTILOS DE LA VENTANA MODAL FLOTANTE */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center; }
+    .modal-content { background: #1f1f1f; border: 1px solid #444; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 25px; border-radius: 8px; position: relative; }
+    .btn-cerrar-modal { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
+    .btn-cerrar-modal:hover { color: #fff; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="contenedor">
+    <div class="header-admin">
+      <h1>Panel Admin</h1>
+      <div class="acciones-header">
+        <button onclick="abrirModalAds()" class="btn-ads">⚙️ Agregar Ads</button>
+        <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+      </div>
+    </div>
+
+    <!-- VENTANA MODAL FLOTANTE PARA LA CONFIGURACIÓN DE ADS -->
+    <div id="modal-ads" class="modal-overlay">
+      <div class="modal-content">
+        <button onclick="cerrarModalAds()" class="btn-cerrar-modal">&times;</button>
+        <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px;">Configuración de Publicidad (Adsterra)</h3>
+        
+        <form id="form-anuncios" style="margin-top: 15px;">
+          <div class="grupo-form">
+            <label>1. Banner Superior (Arriba de la cabecera)</label>
+            <textarea id="ad-header" rows="3" placeholder="Pega el código Script de Adsterra aquí..."></textarea>
+          </div>
+
+          <div class="grupo-form">
+            <label>2. Banner Bajo el Título (En el reproductor)</label>
+            <textarea id="ad-under-title" rows="3" placeholder="Pega el código Script de Adsterra aquí..."></textarea>
+          </div>
+
+          <div class="grupo-form">
+            <label>3. Banner entre Videos (En el Catálogo)</label>
+            <textarea id="ad-between-videos" rows="3" placeholder="Pega el código Script de Adsterra aquí..."></textarea>
+          </div>
+
+          <div class="grupo-form">
+            <label>4. Anuncio Bonificado / Video Preroll (Antes del video principal)</label>
+            <textarea id="ad-rewarded" rows="3" placeholder="Pega el código de Video VAST o Script de Adsterra..."></textarea>
+            <span style="font-size: 11px; color: #888;">Este anuncio aparecerá como una capa previa antes de iniciar el video.</span>
+          </div>
+
+          <div class="grupo-form">
+            <label>5. Código Popunder / Direct Link (Global)</label>
+            <textarea id="ad-popunder" rows="2" placeholder="Pega el script Popunder aquí..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-guardar" style="background: #28a745;">Guardar Publicidades</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="grid-admin">
+      <!-- FORMULARIO DE NUEVO VIDEO -->
+      <div class="card">
+        <h3>Agregar Nuevo Video</h3>
+        <form id="form-video">
+          <div class="grupo-form">
+            <label>1. Título del Video</label>
+            <input type="text" id="titulo" placeholder="Ej: Video N° 1" required>
+          </div>
+
+          <div class="grupo-form">
+            <label>2. Descripción del Video</label>
+            <textarea id="descripcion" rows="3" placeholder="Escribe de qué trata el video..."></textarea>
+          </div>
+
+          <div class="grupo-form">
+            <label>3. Enlace Dropbox del Video (.mp4)</label>
+            <input type="text" id="link-video" placeholder="https://www.dropbox.com/.../video.mp4" required>
+          </div>
+
+          <div class="grupo-form">
+            <label>4. Selecciona el video local (para 5 capturas)</label>
+            <input type="file" id="archivo-local" accept="video/mp4,video/*">
+          </div>
+
+          <div id="sector-miniaturas" class="selector-miniaturas">
+            <label style="font-size: 13px; color: #aaa; font-weight: bold;">5. Elige la miniatura:</label>
+            <div id="grid-opciones" class="grid-opciones"></div>
+          </div>
+
+          <button type="submit" id="btn-submit" class="btn-guardar">Guardar Video</button>
+        </form>
+      </div>
+
+      <!-- ESTADÍSTICAS Y TABLA DE VIDEOS -->
+      <div>
+        <div class="card" style="margin-bottom: 20px;">
+          <h3>Estadísticas de Tráfico Web</h3>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 20px; text-align: center;">
+            <div style="background: #2b2b2b; padding: 10px; border-radius: 6px;">
+              <span style="font-size: 11px; color: #aaa;">HOY</span>
+              <h2 id="visitas-hoy" style="margin: 5px 0 0 0; color: #0061fe;">0</h2>
+            </div>
+            <div style="background: #2b2b2b; padding: 10px; border-radius: 6px;">
+              <span style="font-size: 11px; color: #aaa;">ESTA SEMANA</span>
+              <h2 id="visitas-semana" style="margin: 5px 0 0 0; color: #28a745;">0</h2>
+            </div>
+            <div style="background: #2b2b2b; padding: 10px; border-radius: 6px;">
+              <span style="font-size: 11px; color: #aaa;">ESTE MES</span>
+              <h2 id="visitas-mes" style="margin: 5px 0 0 0; color: #ffc107;">0</h2>
+            </div>
+            <div style="background: #2b2b2b; padding: 10px; border-radius: 6px;">
+              <span style="font-size: 11px; color: #aaa;">ESTE AÑO</span>
+              <h2 id="visitas-anio" style="margin: 5px 0 0 0; color: #17a2b8;">0</h2>
+            </div>
+            <div style="background: #2b2b2b; padding: 10px; border-radius: 6px;">
+              <span style="font-size: 11px; color: #aaa;">AÑO PASADO</span>
+              <h2 id="visitas-anio-pasado" style="margin: 5px 0 0 0; color: #dc3545;">0</h2>
+            </div>
+          </div>
+
+          <div style="max-width: 350px; margin: 0 auto;">
+            <h4 style="text-align: center; color: #aaa; margin-bottom: 10px;">Distribución por País (%)</h4>
+            <canvas id="graficoPaises"></canvas>
+          </div>
+        </div>
+
+        <h3>Videos Publicados</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Miniatura</th>
+              <th>Título</th>
+              <th>Vistas</th>
+              <th>Likes</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="lista-admin"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- CONTROL DE VENTANA MODAL DE ADS ---
+    function abrirModalAds() {
+      document.getElementById('modal-ads').style.display = 'flex';
+    }
+    function cerrarModalAds() {
+      document.getElementById('modal-ads').style.display = 'none';
+    }
+
+    // --- MANEJO DE PUBLICIDADES EN ADMIN ---
+    function cargarAnunciosAdmin() {
+      const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
+      document.getElementById('ad-header').value = anuncios.header || '';
+      document.getElementById('ad-under-title').value = anuncios.underTitle || '';
+      document.getElementById('ad-between-videos').value = anuncios.betweenVideos || '';
+      document.getElementById('ad-rewarded').value = anuncios.rewarded || '';
+      document.getElementById('ad-popunder').value = anuncios.popunder || '';
+    }
+
+    document.getElementById('form-anuncios').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const anuncios = {
+        header: document.getElementById('ad-header').value,
+        underTitle: document.getElementById('ad-under-title').value,
+        betweenVideos: document.getElementById('ad-between-videos').value,
+        rewarded: document.getElementById('ad-rewarded').value,
+        popunder: document.getElementById('ad-popunder').value
+      };
+      localStorage.setItem('config_anuncios', JSON.stringify(anuncios));
+      alert('¡Configuración de anuncios guardada!');
+      cerrarModalAds();
+    });
+
+    cargarAnunciosAdmin();
+
+    // --- SEGURIDAD Y SESIÓN ---
+    if (sessionStorage.getItem('adminAutenticado') !== 'true' && localStorage.getItem('adminAutenticado') !== 'true') {
+      window.location.href = 'login.html';
+    } else {
+      document.body.style.display = 'block';
+    }
+
+    function cerrarSesion() {
+      sessionStorage.removeItem('adminAutenticado');
+      localStorage.removeItem('adminAutenticado');
+      window.location.href = 'login.html';
+    }
+
+    let miniaturaElegida = '';
+
+    function fijarLinkDropbox(url) {
+      if (!url) return '';
+      let urlLimpia = url.trim();
+      if (urlLimpia.includes('dl=0')) return urlLimpia.replace('dl=0', 'raw=1');
+      if (urlLimpia.includes('dl=1')) return urlLimpia.replace('dl=1', 'raw=1');
+      if (!urlLimpia.includes('raw=1')) {
+        return urlLimpia.includes('?') ? urlLimpia + '&raw=1' : urlLimpia + '?raw=1';
+      }
+      return urlLimpia;
+    }
+
+    document.getElementById('archivo-local').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const fileURL = URL.createObjectURL(file);
+      const video = document.createElement('video');
+      video.src = fileURL;
+      video.muted = true;
+
+      const grid = document.getElementById('grid-opciones');
+      const sector = document.getElementById('sector-miniaturas');
+      grid.innerHTML = '';
+
+      video.onloadedmetadata = async () => {
+        const duracion = video.duration || 30;
+        const tiempos = [
+          Math.floor(duracion * 0.10),
+          Math.floor(duracion * 0.25),
+          Math.floor(duracion * 0.40),
+          Math.floor(duracion * 0.65),
+          Math.floor(duracion * 0.85)
+        ];
+
+        for (let i = 0; i < tiempos.length; i++) {
+          const imgData = await capturarFotograma(video, tiempos[i]);
+          const img = document.createElement('img');
+          img.src = imgData;
+          img.className = 'opcion-thumb';
+          
+          if (i === 0) {
+            img.classList.add('seleccionada');
+            miniaturaElegida = imgData;
+          }
+
+          img.onclick = function() {
+            document.querySelectorAll('.opcion-thumb').forEach(el => el.classList.remove('seleccionada'));
+            this.classList.add('seleccionada');
+            miniaturaElegida = imgData;
+          };
+
+          grid.appendChild(img);
+        }
+
+        sector.style.display = 'block';
+      };
+    });
+
+    function capturarFotograma(video, segundo) {
+      return new Promise((resolve) => {
+        video.currentTime = segundo;
+        video.onseeked = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = 320;
+          canvas.height = 180;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          // Comprimido al 60% para evitar sobrecargar MongoDB
+          resolve(canvas.toDataURL('image/jpeg', 0.6));
+        };
+      });
+    }
+
+    // --- CARGAR Y RENDERIZAR VIDEOS DESDE MONGODB (Rutas Relativas) ---
+    async function renderizar() {
+      try {
+        const response = await fetch('/api/videos');
+        const lista = await response.json();
+        const tbody = document.getElementById('lista-admin');
+        tbody.innerHTML = '';
+
+        lista.forEach(vid => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><img src="${vid.urlPortada || 'https://via.placeholder.com/320x180?text=Sin+Miniatura'}" class="thumb-mini"></td>
+            <td><strong>${vid.titulo}</strong></td>
+            <td>${vid.vistas || 0}</td>
+            <td>${vid.likes || 0}</td>
+            <td><button class="btn-eliminar" onclick="eliminar('${vid._id}')">Eliminar</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        console.error('Error al cargar videos:', error);
+      }
+    }
+
+    // --- ENVIAR NUEVO VIDEO AL BACKEND ---
+    document.getElementById('form-video').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const nuevo = {
+        titulo: document.getElementById('titulo').value,
+        descripcion: document.getElementById('descripcion').value || 'Sin descripción.',
+        urlPortada: miniaturaElegida || 'https://via.placeholder.com/320x180?text=Sin+Miniatura',
+        urlVideo: fijarLinkDropbox(document.getElementById('link-video').value)
+      };
+
+      try {
+        const response = await fetch('/api/videos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(nuevo)
+        });
+
+        if (response.ok) {
+          this.reset();
+          document.getElementById('sector-miniaturas').style.display = 'none';
+          miniaturaElegida = '';
+          renderizar();
+          alert('¡Video guardado exitosamente en la base de datos!');
+        } else {
+          alert('Error al guardar el video en el servidor.');
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
+        alert('No se pudo conectar con el servidor backend.');
+      }
+    });
+
+    // --- ELIMINAR VIDEO DE LA BASE DE DATOS ---
+    async function eliminar(id) {
+      if (confirm('¿Eliminar video de la base de datos?')) {
+        try {
+          const response = await fetch(`/api/videos/${id}`, {
+            method: 'DELETE'
+          });
+          if (response.ok) {
+            renderizar();
+          } else {
+            alert('Error al eliminar el video.');
+          }
+        } catch (error) {
+          console.error('Error al eliminar:', error);
+        }
+      }
+    }
+
+    renderizar();
+
+    // --- CÁLCULO DE VISITAS Y GRÁFICO POR PAÍS ---
+    function cargarEstadisticasAdmin() {
+      const stats = JSON.parse(localStorage.getItem('stats_visitas')) || { historial: [], paises: {} };
+      const ahora = new Date();
+
+      const inicioHoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate()).getTime();
+      const inicioSemana = inicioHoy - (ahora.getDay() * 86400000);
+      const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1).getTime();
+      const inicioAnio = new Date(ahora.getFullYear(), 0, 1).getTime();
+      
+      const inicioAnioPasado = new Date(ahora.getFullYear() - 1, 0, 1).getTime();
+      const finAnioPasado = new Date(ahora.getFullYear() - 1, 11, 31, 23, 59, 59).getTime();
+
+      let hoy = 0, semana = 0, mes = 0, anio = 0, anioPasado = 0;
+
+      stats.historial.forEach(t => {
+        if (t >= inicioHoy) hoy++;
+        if (t >= inicioSemana) semana++;
+        if (t >= inicioMes) mes++;
+        if (t >= inicioAnio) anio++;
+        if (t >= inicioAnioPasado && t <= finAnioPasado) anioPasado++;
+      });
+
+      document.getElementById('visitas-hoy').textContent = hoy;
+      document.getElementById('visitas-semana').textContent = semana;
+      document.getElementById('visitas-mes').textContent = mes;
+      document.getElementById('visitas-anio').textContent = anio;
+      document.getElementById('visitas-anio-pasado').textContent = anioPasado;
+
+      const totalVisitasPaises = Object.values(stats.paises).reduce((a, b) => a + b, 0);
+      const etiquetas = [];
+      const porcentajes = [];
+
+      for (const [pais, cantidad] of Object.entries(stats.paises)) {
+        const pct = totalVisitasPaises > 0 ? ((cantidad / totalVisitasPaises) * 100).toFixed(1) : 0;
+        etiquetas.push(`${pais} (${pct}%)`);
+        porcentajes.push(pct);
+      }
+
+      const ctx = document.getElementById('graficoPaises').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: etiquetas.length ? etiquetas : ['Sin datos'],
+          datasets: [{
+            data: porcentajes.length ? porcentajes : [100],
+            backgroundColor: ['#e50914', '#0061fe', '#28a745', '#ffc107', '#17a2b8', '#6c757d']
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { labels: { color: '#fff' } }
+          }
+        }
+      });
+    }
+
+    cargarEstadisticasAdmin();
+  </script>
+
+</body>
+</html>
