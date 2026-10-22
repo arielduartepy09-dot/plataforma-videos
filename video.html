@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pestana-titulo">Reproductor de Video | HOTMEN</title>
+
+  <!-- Meta etiquetas para SEO y contenido para adultos (+18) -->
+  <meta name="description" content="Reproductor de video exclusivo en alta definición.">
+  <meta name="rating" content="RTA-5042-1996-1400-1577-RTA" />
+  <meta name="rating" content="adult" />
+  <meta name="rating" content="mature" />
+
+  <!-- FUENTE INTER -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-primary: #0d0e12;
+      --bg-surface: #16181f;
+      --bg-surface-hover: #1f222c;
+      --primary: #e50914;
+      --primary-hover: #b80710;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    .header-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 14, 18, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 1.4rem;
+    }
+
+    .badge-18 {
+      background: rgba(229, 9, 20, 0.15);
+      color: var(--primary);
+      border: 1px solid rgba(229, 9, 20, 0.3);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .btn-volver {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+    }
+
+    .btn-volver:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* CONTENEDOR LAYOUT DE 2 COLUMNAS */
+    .layout-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 20px 60px 20px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 28px;
+      width: 100%;
+    }
+
+    /* REPRODUCTOR Y MAIN CONTENT */
+    .video-main-column {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .box-video-wrapper {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #000;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .box-video {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+    }
+
+    .box-video video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      outline: none;
+    }
+
+    /* OVERLAY ANUNCIO REWARDED */
+    #overlay-rewarded {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 20;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-continue-ad {
+      background: linear-gradient(135deg, #e50914 0%, #ff4b55 100%);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+    }
+
+    .btn-continue-ad:hover {
+      transform: scale(1.04);
+    }
+
+    /* ENCABEZADO DEL VIDEO */
+    .video-header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .video-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .video-actions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .views-counter {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-action {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .btn-action:hover {
+      background: var(--bg-surface-hover);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-like.activo {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* DESCRIPCIÓN */
+    .detalles-box {
+      background: var(--bg-surface);
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .descripcion-text {
+      font-size: 0.92rem;
+      color: #d1d5db;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    /* SECCIÓN DE COMENTARIOS */
+    .comments-section {
+      background: var(--bg-surface);
+      padding: 22px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .comments-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .comment-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .comment-input-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .comment-input-group input {
+      width: 50%;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .comment-form textarea {
+      width: 100%;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-size: 0.9rem;
+      min-height: 80px;
+      resize: vertical;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .comment-input-group input:focus, .comment-form textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-submit-comment {
+      align-self: flex-end;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-submit-comment:hover {
+      background: var(--primary-hover);
+    }
+
+    .comments-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .comment-card {
+      display: flex;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .avatar-user {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #e50914, #7c0d13);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .comment-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .comment-author {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .comment-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: normal;
+    }
+
+    .comment-text {
+      font-size: 0.88rem;
+      color: #d1d5db;
+      line-height: 1.4;
+    }
+
+    /* COLUMNA DERECHA: RECOMENDADOS */
+    .recommended-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .recommended-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .recommended-card {
+      display: flex;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+      background: var(--bg-surface);
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+    }
+
+    .recommended-card:hover {
+      background: var(--bg-surface-hover);
+      transform: translateX(4px);
+    }
+
+    .rec-img-wrapper {
+      width: 120px;
+      height: 68px;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #000;
+    }
+
+    .rec-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .rec-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      overflow: hidden;
+    }
+
+    .rec-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rec-views {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* TOAST NOTIFICACIÓN */
+    .toast-msg {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--bg-surface);
+      border: 1px solid var(--primary);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: none;
+    }
+
+    /* RESPONSIVE MÓVIL */
+    @media (max-width: 960px) {
+      .layout-grid {
+        grid-template-columns: 1fr;
+      }
+      .comment-input-group input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER NAVEGACIÓN -->
+  <header class="header-sticky">
+    <div class="header-container">
+      <a href="index.html" class="logo">
+        <span>HOTMEN</span>
+        <span class="badge-18">+18</span>
+      </a>
+      <a href="index.html" class="btn-volver">← Volver al catálogo</a>
+    </div>
+  </header>
+
+  <!-- LAYOUT PRINCIPAL -->
+  <div class="layout-grid">
+    
+    <!-- COLUMNA IZQUIERDA: VIDEO Y DETALLES -->
+    <div class="video-main-column">
+      
+      <!-- REPRODUCTOR DE VIDEO CON ANUNCIOS -->
+      <div class="box-video-wrapper">
+        <div id="overlay-rewarded">
+          <div id="slot-ad-rewarded" style="margin-bottom: 15px; text-align: center;"></div>
+          <button class="btn-continue-ad" onclick="cerrarAnuncioBonificado()">Continuar al Video ▶</button>
+        </div>
+
+        <div class="box-video">
+          <video id="reproductor" controls autoplay preload="metadata">
+            <source id="fuente-video" src="" type="video/mp4">
+            Tu navegador no soporta la reproducción de video.
+          </video>
+        </div>
+      </div>
+
+      <!-- TÍTULO Y BOTONES DE ACCIÓN -->
+      <div class="video-header-info">
+        <h1 id="titulo-display" class="video-title">Cargando...</h1>
+
+        <div class="video-actions-bar">
+          <span id="vistas-display" class="views-counter">0 reproducciones</span>
+          
+          <div class="action-buttons">
+            <button id="btn-like" class="btn-action btn-like" onclick="darLike()">
+              👍 <span id="num-likes">0</span>
+            </button>
+            <button class="btn-action" onclick="compartirEnlace()">
+              🔗 Compartir
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLOT PUBLICIDAD BAJO EL TÍTULO -->
+      <div id="slot-ad-under-title" style="text-align: center;"></div>
+
+      <!-- DESCRIPCIÓN -->
+      <div class="detalles-box">
+        <p id="descripcion-display" class="descripcion-text">Cargando detalles...</p>
+      </div>
+
+      <!-- SECCIÓN DE COMENTARIOS -->
+      <div class="comments-section">
+        <h3 class="comments-title">💬 Comentarios (<span id="count-comentarios">0</span>)</h3>
+        
+        <form class="comment-form" onsubmit="agregarComentario(event)">
+          <div class="comment-input-group">
+            <input type="text" id="input-autor" placeholder="Tu apodo o nombre ficticio..." required maxlength="30">
+          </div>
+          <textarea id="input-texto" placeholder="Escribe tu comentario aquí..." required maxlength="300"></textarea>
+          <button type="submit" class="btn-submit-comment">Comentar</button>
+        </form>
+
+        <div class="comments-list" id="lista-comentarios">
+          <!-- Se cargan dinámicamente -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COLUMNA DERECHA: RECOMENDADOS -->
+    <div class="recommended-column">
+      <h3 class="recommended-title">🔥 Más Recomendados</h3>
+      <div id="contenedor-recomendados" style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Se cargan dinámicamente -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TOAST NOTIFICACIÓN -->
+  <div id="toast" class="toast-msg">¡Enlace copiado al portapapeles!</div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const videoId = params.get('id');
+
+    // --- MANEJO DE ANUNCIOS EN EL REPRODUCTOR ---
+    function cargarAnunciosReproductor() {
+      const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
+
+      if (anuncios.rewarded) {
+        const overlay = document.getElementById('overlay-rewarded');
+        overlay.style.display = 'flex';
+        ejecutarScriptAnuncio('slot-ad-rewarded', anuncios.rewarded);
+        
+        const vid = document.getElementById('reproductor');
+        vid.pause();
+      }
+
+      if (anuncios.underTitle) {
+        ejecutarScriptAnuncio('slot-ad-under-title', anuncios.underTitle);
+      }
+
+      if (anuncios.popunder) {
+        ejecutarScriptAnuncio(document.body, anuncios.popunder);
+      }
+    }
+
+    function cerrarAnuncioBonificado() {
+      document.getElementById('overlay-rewarded').style.display = 'none';
+      const vid = document.getElementById('reproductor');
+      vid.play();
+    }
+
+    function ejecutarScriptAnuncio(contenedor, codigoHTML) {
+      const el = typeof contenedor === 'string' ? document.getElementById(contenedor) : contenedor;
+      if (!el || !codigoHTML) return;
+      
+      el.innerHTML = codigoHTML;
+      const scripts = el.querySelectorAll('script');
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+      });
+    }
+
+    // --- CARGAR DATOS DEL VIDEO (Rutas Relativas) ---
+    async function registrarReproduccion(id) {
+      try {
+        await fetch(`/api/videos/${id}/vista`, { method: 'PUT' });
+      } catch (e) {
+        console.error('Error incrementando reproducciones:', e);
+      }
+    }
+
+    async function cargarVideoActual() {
+      if (!videoId) {
+        document.getElementById('titulo-display').textContent = 'Video no encontrado.';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/videos');
+        const videos = await response.json();
+        
+        const videoActual = videos.find(v => v._id === videoId);
+
+        if (videoActual) {
+          registrarReproduccion(videoId);
+
+          // Cargar datos en la UI
+          document.getElementById('fuente-video').src = videoActual.urlVideo;
+          document.getElementById('titulo-display').textContent = videoActual.titulo;
+          document.getElementById('pestana-titulo').textContent = `${videoActual.titulo} | HOTMEN`;
+          document.getElementById('descripcion-display').textContent = videoActual.descripcion || 'Sin descripción disponible para este video.';
+          document.getElementById('vistas-display').textContent = `${(videoActual.vistas || 0).toLocaleString()} reproducciones`;
+          document.getElementById('num-likes').textContent = videoActual.likes || 0;
+          document.getElementById('reproductor').load();
+
+          if (localStorage.getItem(`like_${videoId}`) === 'true') {
+            document.getElementById('btn-like').classList.add('activo');
+          }
+
+          // Cargar recomendados
+          cargarRecomendados(videos, videoId);
+
+        } else {
+          document.getElementById('titulo-display').textContent = 'Video no encontrado.';
+        }
+      } catch (error) {
+        console.error('Error al cargar el video:', error);
+        document.getElementById('titulo-display').textContent = 'Error de conexión con el servidor.';
+      }
+    }
+
+    // --- DAR LIKE ---
+    async function darLike() {
+      if (!videoId) return;
+
+      const btn = document.getElementById('btn-like');
+      const numLikesEl = document.getElementById('num-likes');
+      const yaDioLike = localStorage.getItem(`like_${videoId}`) === 'true';
+      const accion = yaDioLike ? 'restar' : 'sumar';
+
+      try {
+        const response = await fetch(`/api/videos/${videoId}/like`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accion })
+        });
+        const data = await response.json();
+
+        if (data.exito) {
+          numLikesEl.textContent = data.likes;
+          if (yaDioLike) {
+            localStorage.removeItem(`like_${videoId}`);
+            btn.classList.remove('activo');
+          } else {
+            localStorage.setItem(`like_${videoId}`, 'true');
+            btn.classList.add('activo');
+          }
+        }
+      } catch (e) {
+        console.error('Error al actualizar likes:', e);
+      }
+    }
+
+    // --- CARGAR RECOMENDADOS ---
+    function cargarRecomendados(listaVideos, idActual) {
+      const contenedor = document.getElementById('contenedor-recomendados');
+      const filtrados = listaVideos.filter(v => v._id !== idActual).slice(0, 6);
+
+      contenedor.innerHTML = '';
+      filtrados.forEach(v => {
+        const card = document.createElement('a');
+        card.className = 'recommended-card';
+        card.href = `video.html?id=${v._id}`;
+        card.innerHTML = `
+          <div class="rec-img-wrapper">
+            <img src="${v.urlPortada || 'https://via.placeholder.com/320x180'}" alt="${v.titulo}">
+          </div>
+          <div class="rec-info">
+            <span class="rec-title">${v.titulo}</span>
+            <span class="rec-views">👁️ ${v.vistas || 0} vistas</span>
+          </div>
+        `;
+        contenedor.appendChild(card);
+      });
+    }
+
+    // --- MANEJO DE COMENTARIOS CON APODOS FICTICIOS ---
+    function obtenerComentariosKey() {
+      return `comentarios_video_${videoId}`;
+    }
+
+    function cargarComentarios() {
+      if (!videoId) return;
+      const comentarios = JSON.parse(localStorage.getItem(obtenerComentariosKey())) || [];
+      const listaDiv = document.getElementById('lista-comentarios');
+      document.getElementById('count-comentarios').textContent = comentarios.length;
+
+      listaDiv.innerHTML = '';
+
+      if (comentarios.length === 0) {
+        listaDiv.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Sé el primero en dejar un comentario.</p>';
+        return;
+      }
+
+      comentarios.forEach(c => {
+        const inicial = c.autor ? c.autor.charAt(0).toUpperCase() : 'U';
+        const card = document.createElement('div');
+        card.className = 'comment-card';
+        card.innerHTML = `
+          <div class="avatar-user">${inicial}</div>
+          <div class="comment-body">
+            <span class="comment-author">${c.autor} <span class="comment-date">• ${c.fecha}</span></span>
+            <p class="comment-text">${c.texto}</p>
+          </div>
+        `;
+        listaDiv.appendChild(card);
+      });
+    }
+
+    function agregarComentario(e) {
+      e.preventDefault();
+      const autorInput = document.getElementById('input-autor');
+      const textoInput = document.getElementById('input-texto');
+
+      const autor = autorInput.value.trim();
+      const texto = textoInput.value.trim();
+
+      if (!autor || !texto || !videoId) return;
+
+      const comentarios = JSON.parse(localStorage.getItem(obtenerComentariosKey())) || [];
+      const nuevoComentario = {
+        autor: autor,
+        texto: texto,
+        fecha: new Date().toLocaleDateString('es-ES', { hour: '2-digit', minute: '2-digit' })
+      };
+
+      comentarios.unshift(nuevoComentario);
+      localStorage.setItem(obtenerComentariosKey(), JSON.stringify(comentarios));
+
+      textoInput.value = '';
+      cargarComentarios();
+    }
+
+    // --- UTILIDAD COPIAR ENLACE ---
+    function compartirEnlace() {
+      navigator.clipboard.writeText(window.location.href);
+      const toast = document.getElementById('toast');
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 2500);
+    }
+
+    // Inicialización
+    cargarAnunciosReproductor();
+    cargarVideoActual();
+    cargarComentarios();
+  </script>
+
+</body>
+</html>

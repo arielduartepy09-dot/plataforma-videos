@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso Administrador | HOTMEN</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-primary: #0d0e12;
+      --bg-surface: #16181f;
+      --primary: #e50914;
+      --primary-hover: #b80710;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: all 0.25s ease;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .login-box {
+      background: var(--bg-surface);
+      padding: 36px 28px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+      text-align: center;
+    }
+
+    .brand-logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #d1d5db;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error {
+      color: #ff4b55;
+      background: rgba(229, 9, 20, 0.15);
+      border: 1px solid rgba(229, 9, 20, 0.4);
+      font-size: 0.85rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .btn-back {
+      display: inline-block;
+      margin-top: 20px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .btn-back:hover {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
+    <div class="brand-logo">HOTMEN</div>
+    <h2>Panel de Administración</h2>
+
+    <form id="form-login">
+      <div class="input-group">
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" required placeholder="Ingresa tu clave" autofocus>
+      </div>
+      <button type="submit" id="btn-ingresar">Ingresar</button>
+      <div id="mensaje-error" class="error"></div>
+    </form>
+
+    <a href="index.html" class="btn-back">← Volver al catálogo</a>
+  </div>
+
+  <script>
+    document.getElementById('form-login').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const passwordIngresada = document.getElementById('password').value;
+      const mensajeError = document.getElementById('mensaje-error');
+      const btnIngresar = document.getElementById('btn-ingresar');
+
+      mensajeError.style.display = 'none';
+      btnIngresar.disabled = true;
+      btnIngresar.textContent = 'Verificando...';
+
+      try {
+        // Petición al servidor Node.js utilizando ruta relativa (compatible con Render y Local)
+        const respuesta = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: passwordIngresada })
+        });
+
+        const resultado = await respuesta.json();
+
+        if (resultado.exito) {
+          // Guardamos tanto en sessionStorage como en localStorage para garantizar el acceso a admin.html
+          sessionStorage.setItem('adminAutenticado', 'true');
+          localStorage.setItem('adminAutenticado', 'true');
+          
+          window.location.href = 'admin.html';
+        } else {
+          mensajeError.style.display = 'block';
+          mensajeError.textContent = resultado.mensaje || 'Contraseña incorrecta.';
+          btnIngresar.disabled = false;
+          btnIngresar.textContent = 'Ingresar';
+        }
+      } catch (error) {
+        mensajeError.style.display = 'block';
+        mensajeError.textContent = 'No se pudo conectar con el servidor backend.';
+        btnIngresar.disabled = false;
+        btnIngresar.textContent = 'Ingresar';
+      }
+    });
+  </script>
+
+</body>
+</html>
