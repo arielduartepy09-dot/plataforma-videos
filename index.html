@@ -473,12 +473,12 @@
       }
 
       if (anuncios.popunder) {
-        ejecutarScriptAnuncio(document.body, anuncios.popunder);
+        ejecutarScriptPopunder(anuncios.popunder);
       }
     }
 
-    function ejecutarScriptAnuncio(contenedor, codigoHTML) {
-      const el = typeof contenedor === 'string' ? document.getElementById(contenedor) : contenedor;
+    function ejecutarScriptAnuncio(contenedorId, codigoHTML) {
+      const el = document.getElementById(contenedorId);
       if (!el || !codigoHTML) return;
       
       el.innerHTML = codigoHTML;
@@ -488,6 +488,24 @@
         Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
         newScript.appendChild(document.createTextNode(oldScript.innerHTML));
         oldScript.parentNode.replaceChild(newScript, oldScript);
+      });
+    }
+
+    // Método seguro para inyectar el popunder de forma invisible en el <head> sin afectar la pantalla
+    function ejecutarScriptPopunder(codigoHTML) {
+      const divTemp = document.createElement('div');
+      divTemp.innerHTML = codigoHTML;
+      const scripts = divTemp.querySelectorAll('script');
+      
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        if (oldScript.src) {
+          newScript.src = oldScript.src;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+        document.head.appendChild(newScript);
       });
     }
 
