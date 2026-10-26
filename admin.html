@@ -5,41 +5,138 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administración de Videos | HOTMEN</title>
   <style>
-    body { display: none; background-color: #141414; color: #e5e5e5; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-    * { box-sizing: border-box; }
-    .contenedor { max-width: 1100px; margin: 0 auto; }
-    .header-admin { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
-    h1 { margin: 0; color: #fff; font-size: 22px; }
-    
-    .acciones-header { display: flex; gap: 10px; }
-    .btn-ads { background: #28a745; color: #fff; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    .btn-ads:hover { background: #218838; }
-    .btn-logout { background: #333; color: #fff; border: 1px solid #555; padding: 8px 14px; border-radius: 4px; cursor: pointer; }
-    .btn-logout:hover { background: #444; }
+    :root {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --border-color: #333;
+      --primary: #0061fe;
+      --success: #28a745;
+      --danger: #dc3545;
+      --text-main: #e5e5e5;
+      --text-muted: #aaa;
+    }
 
-    .grid-admin { display: grid; grid-template-columns: 420px 1fr; gap: 20px; }
-    .card { background: #1f1f1f; padding: 20px; border-radius: 8px; border: 1px solid #333; }
+    body { 
+      display: none; 
+      background-color: var(--bg-color); 
+      color: var(--text-main); 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      margin: 0; 
+      padding: 15px; 
+    }
+    
+    * { box-sizing: border-box; }
+    
+    .contenedor { 
+      max-width: 1100px; 
+      margin: 0 auto; 
+    }
+
+    /* Cabecera adaptable estilo App */
+    .header-admin { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      border-bottom: 1px solid var(--border-color); 
+      padding-bottom: 15px; 
+      margin-bottom: 20px; 
+    }
+    
+    h1 { margin: 0; color: #fff; font-size: 20px; }
+    
+    .acciones-header { display: flex; gap: 8px; }
+    
+    .btn-ads { background: var(--success); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
+    .btn-logout { background: #333; color: #fff; border: 1px solid #555; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+
+    /* Grid adaptable: en PC dos columnas, en Celular una sola columna tipo App */
+    .grid-admin { 
+      display: grid; 
+      grid-template-columns: 400px 1fr; 
+      gap: 20px; 
+    }
+
+    .card { 
+      background: var(--card-bg); 
+      padding: 20px; 
+      border-radius: 10px; 
+      border: 1px solid var(--border-color); 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+    }
+
     .grupo-form { margin-bottom: 15px; }
-    .grupo-form label { display: block; margin-bottom: 5px; font-size: 13px; color: #aaa; font-weight: bold; }
-    .grupo-form input, .grupo-form textarea { width: 100%; padding: 10px; background: #2b2b2b; border: 1px solid #444; color: #fff; border-radius: 4px; font-family: inherit; }
-    .btn-guardar { width: 100%; padding: 12px; background: #0061fe; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; }
+    .grupo-form label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--text-muted); font-weight: bold; }
+    .grupo-form input, .grupo-form textarea { 
+      width: 100%; 
+      padding: 12px; 
+      background: #2b2b2b; 
+      border: 1px solid #444; 
+      color: #fff; 
+      border-radius: 6px; 
+      font-size: 14px;
+      font-family: inherit; 
+    }
+    
+    .btn-guardar { 
+      width: 100%; 
+      padding: 14px; 
+      background: var(--primary); 
+      border: none; 
+      color: #fff; 
+      font-weight: bold; 
+      font-size: 15px;
+      border-radius: 6px; 
+      cursor: pointer; 
+    }
     
     .selector-miniaturas { margin-bottom: 15px; display: none; }
     .grid-opciones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
-    .opcion-thumb { width: 100%; height: 65px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent; opacity: 0.7; }
-    .opcion-thumb.seleccionada { border-color: #0061fe; opacity: 1; transform: scale(1.03); }
-    
-    table { width: 100%; border-collapse: collapse; background: #1f1f1f; border-radius: 8px; overflow: hidden; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; font-size: 13px; }
+    .opcion-thumb { width: 100%; height: 65px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; opacity: 0.7; }
+    .opcion-thumb.seleccionada { border-color: var(--primary); opacity: 1; transform: scale(1.03); }
+
+    /* Estilos de Tabla tradicional para PC y Tarjetas móviles */
+    .tabla-desktop { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 13px; }
     th { background: #2a2a2a; }
-    .thumb-mini { width: 70px; height: 40px; object-fit: cover; border-radius: 4px; background: #000; }
-    .btn-eliminar { background: #dc3545; border: none; color: white; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+    .thumb-mini { width: 60px; height: 35px; object-fit: cover; border-radius: 4px; background: #000; }
+    .btn-eliminar { background: var(--danger); border: none; color: white; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+
+    /* Contenedor de lista móvil (Se oculta en PC, se muestra en celular) */
+    .lista-mobile { display: none; }
 
     /* ESTILOS DE LA VENTANA MODAL FLOTANTE */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center; }
-    .modal-content { background: #1f1f1f; border: 1px solid #444; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 25px; border-radius: 8px; position: relative; }
-    .btn-cerrar-modal { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
-    .btn-cerrar-modal:hover { color: #fff; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center; padding: 10px; }
+    .modal-content { background: var(--card-bg); border: 1px solid #444; width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; padding: 20px; border-radius: 10px; position: relative; }
+    .btn-cerrar-modal { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; }
+
+    /* MEDIA QUERIES PARA ADAPTARSE PERFECTAMENTE A CELULARES */
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      .grid-admin { grid-template-columns: 1fr; gap: 10px; }
+      .header-admin { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .acciones-header { width: 100%; display: flex; justify-content: space-between; }
+      
+      /* Ocultar tabla clásica en celular y activar formato tarjeta App */
+      .tabla-desktop { display: none; }
+      .lista-mobile { display: flex; flex-direction: column; gap: 10px; }
+      
+      .card-video-mobile {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        padding: 12px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .card-video-info { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+      .card-video-info img { width: 70px; height: 45px; object-fit: cover; border-radius: 4px; }
+      .card-video-info div { overflow: hidden; }
+      .card-video-info h4 { margin: 0 0 4px 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .card-video-info p { margin: 0; font-size: 11px; color: var(--text-muted); }
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -49,45 +146,39 @@
     <div class="header-admin">
       <h1>Panel Admin</h1>
       <div class="acciones-header">
-        <button onclick="abrirModalAds()" class="btn-ads">⚙️ Agregar Ads</button>
+        <button onclick="abrirModalAds()" class="btn-ads">⚙️ Config Ads</button>
         <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
       </div>
     </div>
 
-    <!-- VENTANA MODAL FLOTANTE PARA LA CONFIGURACIÓN DE ADS -->
+    <!-- VENTANA MODAL FLOTANTE PARA ADS -->
     <div id="modal-ads" class="modal-overlay">
       <div class="modal-content">
         <button onclick="cerrarModalAds()" class="btn-cerrar-modal">&times;</button>
-        <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px;">Configuración de Publicidad (Adsterra)</h3>
+        <h3 style="margin-top: 0; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Publicidad (Adsterra)</h3>
         
         <form id="form-anuncios" style="margin-top: 15px;">
           <div class="grupo-form">
-            <label>1. Banner Superior (Arriba de la cabecera)</label>
-            <textarea id="ad-header" rows="3" placeholder="Pega el código Script de Adsterra aquí..."></textarea>
+            <label>1. Banner Superior</label>
+            <textarea id="ad-header" rows="2" placeholder="Código script..."></textarea>
           </div>
-
           <div class="grupo-form">
-            <label>2. Banner Bajo el Título (En el reproductor)</label>
-            <textarea id="ad-under-title" rows="3" placeholder="Pega el código Script de Adsterra aquí..."></textarea>
+            <label>2. Banner Bajo el Título</label>
+            <textarea id="ad-under-title" rows="2" placeholder="Código script..."></textarea>
           </div>
-
           <div class="grupo-form">
-            <label>3. Banner entre Videos (En el Catálogo)</label>
-            <textarea id="ad-between-videos" rows="3" placeholder="Pega el código Script de Adsterra aquí..."></textarea>
+            <label>3. Banner entre Videos</label>
+            <textarea id="ad-between-videos" rows="2" placeholder="Código script..."></textarea>
           </div>
-
           <div class="grupo-form">
-            <label>4. Anuncio Bonificado / Video Preroll (Antes del video principal)</label>
-            <textarea id="ad-rewarded" rows="3" placeholder="Pega el código de Video VAST o Script de Adsterra..."></textarea>
-            <span style="font-size: 11px; color: #888;">Este anuncio aparecerá como una capa previa antes de iniciar el video.</span>
+            <label>4. Anuncio Preroll / Video</label>
+            <textarea id="ad-rewarded" rows="2" placeholder="Código VAST..."></textarea>
           </div>
-
           <div class="grupo-form">
-            <label>5. Código Popunder / Direct Link (Global)</label>
-            <textarea id="ad-popunder" rows="2" placeholder="Pega el script Popunder aquí..."></textarea>
+            <label>5. Popunder / Direct Link</label>
+            <textarea id="ad-popunder" rows="2" placeholder="Script popunder..."></textarea>
           </div>
-
-          <button type="submit" class="btn-guardar" style="background: #28a745;">Guardar Publicidades</button>
+          <button type="submit" class="btn-guardar" style="background: var(--success);">Guardar Anuncios</button>
         </form>
       </div>
     </div>
@@ -95,98 +186,80 @@
     <div class="grid-admin">
       <!-- FORMULARIO DE NUEVO VIDEO -->
       <div class="card">
-        <h3>Agregar Nuevo Video</h3>
+        <h3 style="margin-top:0;">Agregar Nuevo Video</h3>
         <form id="form-video">
           <div class="grupo-form">
-            <label>1. Título del Video</label>
+            <label>Título del Video</label>
             <input type="text" id="titulo" placeholder="Ej: Video N° 1" required>
           </div>
 
           <div class="grupo-form">
-            <label>2. Descripción del Video</label>
-            <textarea id="descripcion" rows="3" placeholder="Escribe de qué trata el video..."></textarea>
+            <label>Descripción</label>
+            <textarea id="descripcion" rows="2" placeholder="Breve descripción..."></textarea>
           </div>
 
           <div class="grupo-form">
-            <label>3. Enlace Dropbox del Video (.mp4)</label>
-            <input type="text" id="link-video" placeholder="https://www.dropbox.com/.../video.mp4" required>
+            <label>Enlace Dropbox (.mp4)</label>
+            <input type="text" id="link-video" placeholder="https://www.dropbox.com/.../video.mp4?raw=1" required>
           </div>
 
           <div class="grupo-form">
-            <label>4. Selecciona el video local (para 5 capturas)</label>
+            <label>Seleccionar video local (para 5 miniaturas)</label>
             <input type="file" id="archivo-local" accept="video/mp4,video/*">
           </div>
 
           <div id="sector-miniaturas" class="selector-miniaturas">
-            <label style="font-size: 13px; color: #aaa; font-weight: bold;">5. Elige la miniatura:</label>
+            <label style="font-size: 13px; color: var(--text-muted); font-weight: bold;">Elige la miniatura:</label>
             <div id="grid-opciones" class="grid-opciones"></div>
           </div>
 
-          <button type="submit" id="btn-submit" class="btn-guardar">Guardar Video</button>
+          <button type="submit" class="btn-guardar">Guardar Video</button>
         </form>
       </div>
 
-      <!-- ESTADÍSTICAS Y TABLA DE VIDEOS -->
+      <!-- ESTADÍSTICAS Y LISTA DE VIDEOS -->
       <div>
-        <div class="card" style="margin-bottom: 20px;">
-          <h3>Estadísticas de Tráfico Web</h3>
-          
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 20px; text-align: center;">
-            <div style="background: #2b2b2b; padding: 10px; border-radius: 6px;">
-              <span style="font-size: 11px; color: #aaa;">HOY</span>
-              <h2 id="visitas-hoy" style="margin: 5px 0 0 0; color: #0061fe;">0</h2>
-            </div>
-            <div style="background: #2b2b2b; padding: 10px; border-radius: 6px;">
-              <span style="font-size: 11px; color: #aaa;">ESTA SEMANA</span>
-              <h2 id="visitas-semana" style="margin: 5px 0 0 0; color: #28a745;">0</h2>
-            </div>
-            <div style="background: #2b2b2b; padding: 10px; border-radius: 6px;">
-              <span style="font-size: 11px; color: #aaa;">ESTE MES</span>
-              <h2 id="visitas-mes" style="margin: 5px 0 0 0; color: #ffc107;">0</h2>
-            </div>
-            <div style="background: #2b2b2b; padding: 10px; border-radius: 6px;">
-              <span style="font-size: 11px; color: #aaa;">ESTE AÑO</span>
-              <h2 id="visitas-anio" style="margin: 5px 0 0 0; color: #17a2b8;">0</h2>
-            </div>
-            <div style="background: #2b2b2b; padding: 10px; border-radius: 6px;">
-              <span style="font-size: 11px; color: #aaa;">AÑO PASADO</span>
-              <h2 id="visitas-anio-pasado" style="margin: 5px 0 0 0; color: #dc3545;">0</h2>
-            </div>
+        <div class="card">
+          <h3 style="margin-top:0;">Tráfico Web</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; margin-bottom: 15px; text-align: center;">
+            <div style="background: #2b2b2b; padding: 8px; border-radius: 6px;"><span style="font-size: 10px; color: #aaa;">HOY</span><h3 id="visitas-hoy" style="margin: 4px 0 0 0; color: var(--primary);">0</h3></div>
+            <div style="background: #2b2b2b; padding: 8px; border-radius: 6px;"><span style="font-size: 10px; color: #aaa;">SEMANA</span><h3 id="visitas-semana" style="margin: 4px 0 0 0; color: var(--success);">0</h3></div>
+            <div style="background: #2b2b2b; padding: 8px; border-radius: 6px;"><span style="font-size: 10px; color: #aaa;">MES</span><h3 id="visitas-mes" style="margin: 4px 0 0 0; color: #ffc107;">0</h3></div>
+            <div style="background: #2b2b2b; padding: 8px; border-radius: 6px;"><span style="font-size: 10px; color: #aaa;">AÑO</span><h3 id="visitas-anio" style="margin: 4px 0 0 0; color: #17a2b8;">0</h3></div>
           </div>
-
-          <div style="max-width: 350px; margin: 0 auto;">
-            <h4 style="text-align: center; color: #aaa; margin-bottom: 10px;">Distribución por País (%)</h4>
+          <div style="max-width: 250px; margin: 0 auto;">
             <canvas id="graficoPaises"></canvas>
           </div>
         </div>
 
-        <h3>Videos Publicados</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Miniatura</th>
-              <th>Título</th>
-              <th>Vistas</th>
-              <th>Likes</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="lista-admin"></tbody>
-        </table>
+        <h3 style="margin-bottom: 10px;">Videos Publicados</h3>
+        
+        <!-- Tabla para PC -->
+        <div style="overflow-x: auto;">
+          <table class="tabla-desktop">
+            <thead>
+              <tr>
+                <th>Miniatura</th>
+                <th>Título</th>
+                <th>Vistas</th>
+                <th>Likes</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="lista-admin"></tbody>
+          </table>
+        </div>
+
+        <!-- Tarjetas dinámicas para Celular (Estilo App) -->
+        <div id="lista-admin-mobile" class="lista-mobile"></div>
       </div>
     </div>
   </div>
 
   <script>
-    // --- CONTROL DE VENTANA MODAL DE ADS ---
-    function abrirModalAds() {
-      document.getElementById('modal-ads').style.display = 'flex';
-    }
-    function cerrarModalAds() {
-      document.getElementById('modal-ads').style.display = 'none';
-    }
+    function abrirModalAds() { document.getElementById('modal-ads').style.display = 'flex'; }
+    function cerrarModalAds() { document.getElementById('modal-ads').style.display = 'none'; }
 
-    // --- MANEJO DE PUBLICIDADES EN ADMIN ---
     function cargarAnunciosAdmin() {
       const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
       document.getElementById('ad-header').value = anuncios.header || '';
@@ -209,10 +282,8 @@
       alert('¡Configuración de anuncios guardada!');
       cerrarModalAds();
     });
-
     cargarAnunciosAdmin();
 
-    // --- SEGURIDAD Y SESIÓN ---
     if (sessionStorage.getItem('adminAutenticado') !== 'true' && localStorage.getItem('adminAutenticado') !== 'true') {
       window.location.href = 'login.html';
     } else {
@@ -253,13 +324,7 @@
 
       video.onloadedmetadata = async () => {
         const duracion = video.duration || 30;
-        const tiempos = [
-          Math.floor(duracion * 0.10),
-          Math.floor(duracion * 0.25),
-          Math.floor(duracion * 0.40),
-          Math.floor(duracion * 0.65),
-          Math.floor(duracion * 0.85)
-        ];
+        const tiempos = [Math.floor(duracion * 0.10), Math.floor(duracion * 0.25), Math.floor(duracion * 0.40), Math.floor(duracion * 0.65), Math.floor(duracion * 0.85)];
 
         for (let i = 0; i < tiempos.length; i++) {
           const imgData = await capturarFotograma(video, tiempos[i]);
@@ -277,10 +342,8 @@
             this.classList.add('seleccionada');
             miniaturaElegida = imgData;
           };
-
           grid.appendChild(img);
         }
-
         sector.style.display = 'block';
       };
     });
@@ -290,44 +353,63 @@
         video.currentTime = segundo;
         video.onseeked = () => {
           const canvas = document.createElement('canvas');
-          canvas.width = 320;
-          canvas.height = 180;
+          canvas.width = 320; canvas.height = 180;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          // Comprimido al 60% para evitar sobrecargar MongoDB
           resolve(canvas.toDataURL('image/jpeg', 0.6));
         };
       });
     }
 
-    // --- CARGAR Y RENDERIZAR VIDEOS DESDE MONGODB (Rutas Relativas) ---
     async function renderizar() {
       try {
         const response = await fetch('/api/videos');
         const lista = await response.json();
+        
+        // Tabla PC
         const tbody = document.getElementById('lista-admin');
         tbody.innerHTML = '';
 
+        // Tarjetas Celular
+        const listaMobile = document.getElementById('lista-admin-mobile');
+        listaMobile.innerHTML = '';
+
         lista.forEach(vid => {
+          const thumb = vid.urlPortada || 'https://via.placeholder.com/320x180?text=Sin+Miniatura';
+
+          // Fila PC
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td><img src="${vid.urlPortada || 'https://via.placeholder.com/320x180?text=Sin+Miniatura'}" class="thumb-mini"></td>
+            <td><img src="${thumb}" class="thumb-mini"></td>
             <td><strong>${vid.titulo}</strong></td>
             <td>${vid.vistas || 0}</td>
             <td>${vid.likes || 0}</td>
             <td><button class="btn-eliminar" onclick="eliminar('${vid._id}')">Eliminar</button></td>
           `;
           tbody.appendChild(tr);
+
+          // Tarjeta Mobile App
+          const divMob = document.createElement('div');
+          divMob.className = 'card-video-mobile';
+          divMob.innerHTML = `
+            <div class="card-video-info">
+              <img src="${thumb}">
+              <div>
+                <h4>${vid.titulo}</h4>
+                <p>👁️ ${vid.vistas || 0} &nbsp;|&nbsp; ❤️ ${vid.likes || 0}</p>
+              </div>
+            </div>
+            <button class="btn-eliminar" onclick="eliminar('${vid._id}')">❌</button>
+          `;
+          listaMobile.appendChild(divMob);
         });
       } catch (error) {
         console.error('Error al cargar videos:', error);
       }
     }
 
-    // --- ENVIAR NUEVO VIDEO AL BACKEND ---
     document.getElementById('form-video').addEventListener('submit', async function(e) {
       e.preventDefault();
-
       const nuevo = {
         titulo: document.getElementById('titulo').value,
         descripcion: document.getElementById('descripcion').value || 'Sin descripción.',
@@ -347,28 +429,20 @@
           document.getElementById('sector-miniaturas').style.display = 'none';
           miniaturaElegida = '';
           renderizar();
-          alert('¡Video guardado exitosamente en la base de datos!');
+          alert('¡Video guardado exitosamente!');
         } else {
           alert('Error al guardar el video en el servidor.');
         }
       } catch (error) {
         console.error('Error de red:', error);
-        alert('No se pudo conectar con el servidor backend.');
       }
     });
 
-    // --- ELIMINAR VIDEO DE LA BASE DE DATOS ---
     async function eliminar(id) {
       if (confirm('¿Eliminar video de la base de datos?')) {
         try {
-          const response = await fetch(`/api/videos/${id}`, {
-            method: 'DELETE'
-          });
-          if (response.ok) {
-            renderizar();
-          } else {
-            alert('Error al eliminar el video.');
-          }
+          const response = await fetch(`/api/videos/${id}`, { method: 'DELETE' });
+          if (response.ok) renderizar();
         } catch (error) {
           console.error('Error al eliminar:', error);
         }
@@ -377,34 +451,26 @@
 
     renderizar();
 
-    // --- CÁLCULO DE VISITAS Y GRÁFICO POR PAÍS ---
     function cargarEstadisticasAdmin() {
       const stats = JSON.parse(localStorage.getItem('stats_visitas')) || { historial: [], paises: {} };
       const ahora = new Date();
-
       const inicioHoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate()).getTime();
       const inicioSemana = inicioHoy - (ahora.getDay() * 86400000);
       const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1).getTime();
       const inicioAnio = new Date(ahora.getFullYear(), 0, 1).getTime();
-      
-      const inicioAnioPasado = new Date(ahora.getFullYear() - 1, 0, 1).getTime();
-      const finAnioPasado = new Date(ahora.getFullYear() - 1, 11, 31, 23, 59, 59).getTime();
 
-      let hoy = 0, semana = 0, mes = 0, anio = 0, anioPasado = 0;
-
+      let hoy = 0, semana = 0, mes = 0, anio = 0;
       stats.historial.forEach(t => {
         if (t >= inicioHoy) hoy++;
         if (t >= inicioSemana) semana++;
         if (t >= inicioMes) mes++;
         if (t >= inicioAnio) anio++;
-        if (t >= inicioAnioPasado && t <= finAnioPasado) anioPasado++;
       });
 
       document.getElementById('visitas-hoy').textContent = hoy;
       document.getElementById('visitas-semana').textContent = semana;
       document.getElementById('visitas-mes').textContent = mes;
       document.getElementById('visitas-anio').textContent = anio;
-      document.getElementById('visitas-anio-pasado').textContent = anioPasado;
 
       const totalVisitasPaises = Object.values(stats.paises).reduce((a, b) => a + b, 0);
       const etiquetas = [];
@@ -421,21 +487,12 @@
         type: 'doughnut',
         data: {
           labels: etiquetas.length ? etiquetas : ['Sin datos'],
-          datasets: [{
-            data: porcentajes.length ? porcentajes : [100],
-            backgroundColor: ['#e50914', '#0061fe', '#28a745', '#ffc107', '#17a2b8', '#6c757d']
-          }]
+          datasets: [{ data: porcentajes.length ? porcentajes : [100], backgroundColor: ['#e50914', '#0061fe', '#28a745', '#ffc107', '#17a2b8'] }]
         },
-        options: {
-          plugins: {
-            legend: { labels: { color: '#fff' } }
-          }
-        }
+        options: { plugins: { legend: { labels: { color: '#fff', boxWidth: 12 } } } }
       });
     }
-
     cargarEstadisticasAdmin();
   </script>
-
 </body>
 </html>
