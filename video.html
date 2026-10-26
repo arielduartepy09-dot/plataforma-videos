@@ -125,6 +125,19 @@
       gap: 18px;
     }
 
+    /* CUADRO PARA SOCIAL BAR / ANUNCIO SUPERIOR */
+    .card-ad-top {
+      min-height: 90px;
+      background: var(--bg-surface);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 10px;
+    }
+
     .box-video-wrapper {
       position: relative;
       border-radius: var(--radius-md);
@@ -502,10 +515,8 @@
     <!-- COLUMNA IZQUIERDA: VIDEO Y DETALLES -->
     <div class="video-main-column">
       
-      <!-- ESPACIO SOCIAL BAR / IN-PAGE PUSH (Antes del video y del título) -->
-      <div id="slot-social-bar" style="text-align: center;">
-        <script data-cfasync="false" src="https://biomanos.org/14/68c1be865ae2d49821d8f015ffd81bf3"></script>
-      </div>
+      <!-- 1. CUADRO DE ANUNCIO SOCIAL BAR / IN-PAGE PUSH (PRIMERO EN LA PÁGINA) -->
+      <div class="card-ad-top" id="slot-social-bar"></div>
 
       <!-- REPRODUCTOR DE VIDEO CON ANUNCIOS -->
       <div class="box-video-wrapper">
@@ -578,7 +589,7 @@
   </div>
 
   <!-- TOAST NOTIFICACIÓN -->
-  <div id="toast" class="toast-msg">¡Enlace copiado al portapapeles!</div>
+  <div id="toast" class="toast-msg">¡En enlace copiado al portapapeles!</div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
@@ -587,6 +598,10 @@
     // --- MANEJO DE ANUNCIOS EN EL REPRODUCTOR ---
     function cargarAnunciosReproductor() {
       const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
+
+      // Inyectar el código Social Bar que acabas de dar
+      const codigoSocialBar = `<script data-cfasync="false" src="https://biomanos.org/14/68c1be865ae2d49821d8f015ffd81bf3"><\/script>`;
+      ejecutarScriptAnuncio('slot-ad-social-bar', codigoSocialBar);
 
       if (anuncios.rewarded) {
         const overlay = document.getElementById('overlay-rewarded');
@@ -626,7 +641,7 @@
       });
     }
 
-    // Método seguro para inyectar el popunder en el <head> sin romper el body de la página
+    // Método seguro para inyectar el popunder en el <head>
     function ejecutarScriptPopunder(codigoHTML) {
       const divTemp = document.createElement('div');
       divTemp.innerHTML = codigoHTML;
