@@ -526,7 +526,8 @@
         </div>
 
         <div class="box-video">
-          <video id="reproductor" controls autoplay preload="metadata">
+          <!-- SE REMOVIÓ EL ATRIBUTO AUTOPLAY -->
+          <video id="reproductor" controls preload="metadata">
             <source id="fuente-video" src="" type="video/mp4">
             Tu navegador no soporta la reproducción de video.
           </video>
@@ -594,12 +595,13 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const videoId = params.get('id');
+    let vistaRegistrada = false; // Control de vista única por sesión
 
     // --- MANEJO DE ANUNCIOS EN EL REPRODUCTOR ---
     function cargarAnunciosReproductor() {
       const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
 
-      // Inyección limpia del script Social Bar sin caracteres rotos
+      // Inyección limpia del script Social Bar
       const elSocial = document.getElementById('slot-social-bar');
       if (elSocial) {
         const s = document.createElement('script');
@@ -612,9 +614,6 @@
         const overlay = document.getElementById('overlay-rewarded');
         overlay.style.display = 'flex';
         ejecutarScriptAnuncio('slot-ad-rewarded', anuncios.rewarded);
-        
-        const vid = document.getElementById('reproductor');
-        vid.pause();
       }
 
       if (anuncios.underTitle) {
@@ -628,8 +627,7 @@
 
     function cerrarAnuncioBonificado() {
       document.getElementById('overlay-rewarded').style.display = 'none';
-      const vid = document.getElementById('reproductor');
-      vid.play();
+      // Se quitó vid.play() automático
     }
 
     function ejecutarScriptAnuncio(contenedorId, codigoHTML) {
@@ -646,7 +644,6 @@
       });
     }
 
-    // Método seguro para inyectar el popunder en el <head>
     function ejecutarScriptPopunder(codigoHTML) {
       const divTemp = document.createElement('div');
       divTemp.innerHTML = codigoHTML;
@@ -664,7 +661,7 @@
       });
     }
 
-    // --- CARGAR DATOS DEL VIDEO (Rutas Relativas) ---
+    // --- CARGAR DATOS DEL VIDEO ---
     async function registrarReproduccion(id) {
       try {
         await fetch(`/api/videos/${id}/vista`, { method: 'PUT' });
@@ -686,8 +683,6 @@
         const videoActual = videos.find(v => v._id === videoId);
 
         if (videoActual) {
-          registrarReproduccion(videoId);
-
           // Cargar datos en la UI
           document.getElementById('fuente-video').src = videoActual.urlVideo;
           document.getElementById('titulo-display').textContent = videoActual.titulo;
@@ -696,6 +691,15 @@
           document.getElementById('vistas-display').textContent = `${(videoActual.vistas || 0).toLocaleString()} reproducciones`;
           document.getElementById('num-likes').textContent = videoActual.likes || 0;
           document.getElementById('reproductor').load();
+
+          // REGISTRAR VISTA SOLO CUANDO EL USUARIO REPRODUCE EL VIDEO
+          const reproductorVideo = document.getElementById('reproductor');
+          reproductorVideo.addEventListener('play', () => {
+            if (!vistaRegistrada) {
+              registrarReproduccion(videoId);
+              vistaRegistrada = true;
+            }
+          });
 
           if (localStorage.getItem(`like_${videoId}`) === 'true') {
             document.getElementById('btn-like').classList.add('activo');
@@ -768,7 +772,7 @@
       });
     }
 
-    // --- MANEJO DE COMENTARIOS CON APODOS FICTICIOS ---
+    // --- MANEJO DE COMENTARIOS ---
     function obtenerComentariosKey() {
       return `comentarios_video_${videoId}`;
     }
