@@ -105,7 +105,7 @@
       border-radius: 4px;
     }
 
-    /* MENÚ PRINCIPAL DE NAVEGACIÓN EN ENCABEZADO */
+    /* MENÚ PRINCIPAL DE NAVEGACIÓN */
     .nav-menu {
       display: flex;
       align-items: center;
@@ -120,6 +120,7 @@
       padding: 8px 14px;
       border-radius: 20px;
       transition: var(--transition);
+      cursor: pointer;
     }
 
     .nav-link:hover, .nav-link.active {
@@ -175,16 +176,18 @@
       flex: 1;
     }
 
-    /* SECCIÓN NATIVE BANNER ADSTERRA */
+    /* SECCIÓN PUBLICIDAD ADSTERRA NATIVE BANNER */
     .adsterra-native-container {
       width: 100%;
       margin-bottom: 24px;
-      text-align: center;
-      min-height: 100px;
-      background: rgba(22, 24, 31, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 120px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.08);
       border-radius: var(--radius-md);
-      padding: 10px 0;
-      border: 1px solid var(--border-color);
+      overflow: hidden;
     }
 
     /* FILTROS Y CATEGORÍAS */
@@ -220,29 +223,29 @@
       color: #ffffff;
     }
 
-    /* GRID DE VIDEOS A 2, 3 Y 5 COLUMNAS */
-    .grid-videos {
+    /* GRID RESTRUCTURADO (2 COLUMNAS MÓVIL, 3 TABLET, 5 ORDENADOR) */
+    .grid-content {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
     }
 
     @media (min-width: 640px) {
-      .grid-videos {
+      .grid-content {
         grid-template-columns: repeat(3, 1fr);
         gap: 16px;
       }
     }
 
     @media (min-width: 1024px) {
-      .grid-videos {
+      .grid-content {
         grid-template-columns: repeat(5, 1fr);
         gap: 20px;
       }
     }
 
-    /* TARJETA DE VIDEO */
-    .tarjeta-video {
+    /* TARJETA DE VIDEO / FOTO */
+    .tarjeta-item {
       background: var(--bg-surface);
       border-radius: var(--radius-md);
       overflow: hidden;
@@ -255,7 +258,7 @@
       position: relative;
     }
 
-    .tarjeta-video:hover {
+    .tarjeta-item:hover {
       transform: translateY(-6px);
       box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
       border-color: rgba(255, 255, 255, 0.2);
@@ -265,7 +268,7 @@
     .wrapper-img {
       position: relative;
       width: 100%;
-      padding-top: 56.25%;
+      padding-top: 56.25%; /* Relación 16:9 */
       background: #000;
       overflow: hidden;
     }
@@ -280,11 +283,11 @@
       transition: transform 0.4s ease;
     }
 
-    .tarjeta-video:hover .wrapper-img img {
+    .tarjeta-item:hover .wrapper-img img {
       transform: scale(1.05);
     }
 
-    .badge-popular {
+    .badge-tag {
       position: absolute;
       top: 8px;
       left: 8px;
@@ -298,7 +301,7 @@
       backdrop-filter: blur(4px);
     }
 
-    .info-video {
+    .info-item {
       padding: 10px;
       display: flex;
       flex-direction: column;
@@ -306,7 +309,7 @@
       flex: 1;
     }
 
-    .titulo-video {
+    .titulo-item {
       font-size: 0.85rem;
       font-weight: 600;
       margin-bottom: 8px;
@@ -333,18 +336,6 @@
       display: flex;
       align-items: center;
       gap: 4px;
-    }
-
-    /* ANUNCIOS EN GRID */
-    .card-ad {
-      min-height: 180px;
-      background: #000;
-      border: 1px dashed rgba(255, 255, 255, 0.15);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
     }
 
     /* ESTADO VACÍO / ERRORES */
@@ -421,10 +412,10 @@
         <span class="badge-18">+18</span>
       </a>
 
-      <!-- MENÚ DE NAVEGACIÓN PRINCIPAL -->
+      <!-- MENÚ PRINCIPAL -->
       <nav class="nav-menu">
-        <a href="index.html" class="nav-link active">INICIO</a>
-        <a href="fotos.html" class="nav-link">FOTOS</a>
+        <a id="btn-nav-inicio" class="nav-link active" onclick="cambiarVista('videos')">INICIO</a>
+        <a id="btn-nav-fotos" class="nav-link" onclick="cambiarVista('fotos')">FOTOS</a>
         <a href="#categorias" class="nav-link" onclick="enfocarCategorias()">CATEGORÍAS</a>
       </nav>
 
@@ -433,7 +424,7 @@
         <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
-        <input type="text" id="input-buscar" placeholder="Buscar por título o categoría..." oninput="filtrarVideos()">
+        <input type="text" id="input-buscar" placeholder="Buscar por título o categoría..." oninput="filtrarContenido()">
       </div>
     </div>
   </header>
@@ -441,26 +432,25 @@
   <!-- CONTENIDO PRINCIPAL -->
   <div class="main-container">
     
-    <!-- SLOT PUBLICIDAD HEADER CONFIGURABLE DESDE ADMIN -->
+    <!-- SLOT PUBLICIDAD HEADER GENERAL -->
     <div id="slot-ad-header" style="text-align: center; margin-bottom: 20px;"></div>
 
-    <!-- NATIVE BANNER ADSTERRA (UBICADO ANTES DE LAS CATEGORÍAS) -->
+    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA (ANTES DE LAS CATEGORÍAS) -->
     <div class="adsterra-native-container">
       <script async="async" data-cfasync="false" src="https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a"></script>
       <div id="container-301e35981b719360f0a86a0a15801a5a"></div>
     </div>
 
-    <!-- FILTROS Y BARRA DE CATEGORÍAS DINÁMICAS (TODOS, TENDENCIAS, RECIENTES, DESTACADOS) -->
+    <!-- FILTROS Y BARRA DE CATEGORÍAS DINÁMICAS -->
     <div class="categories-bar" id="barra-categorias">
       <button class="chip-filter active" onclick="filtrarCategoria('todos', this)">🔥 Todos</button>
       <button class="chip-filter" onclick="filtrarCategoria('tendencias', this)">⚡ Tendencias</button>
       <button class="chip-filter" onclick="filtrarCategoria('recientes', this)">🆕 Recientes</button>
       <button class="chip-filter" onclick="filtrarCategoria('destacados', this)">⭐ Destacados</button>
-      <!-- Categorías adicionales dinámicas del Admin se cargarán aquí -->
     </div>
 
-    <!-- GRID DE VIDEOS (2 COLUMNAS MÓVIL, 3 TABLET, 5 PC) -->
-    <main class="grid-videos" id="contenedor-grid">
+    <!-- GRID DE VIDEOS / FOTOS -->
+    <main class="grid-content" id="contenedor-grid">
       <!-- Skeletons durante carga -->
       <div class="skeleton"></div>
       <div class="skeleton"></div>
@@ -477,61 +467,20 @@
 
   <script>
     let todosLosVideos = [];
-    let categoriaActual = 'todos';
+    let todasLasFotos = [];
+    let vistaActual = 'videos'; // 'videos' o 'fotos'
 
-    // --- REGISTRO DE VISITAS ---
-    async function registrarVisita() {
-      let estadisticas = JSON.parse(localStorage.getItem('stats_visitas')) || { historial: [], paises: {} };
-      estadisticas.historial.push(new Date().getTime());
-
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        if (res.ok) {
-          const data = await res.json();
-          const pais = data.country_name || 'Desconocido';
-          estadisticas.paises[pais] = (estadisticas.paises[pais] || 0) + 1;
-        } else {
-          estadisticas.paises['Desconocido'] = (estadisticas.paises['Desconocido'] || 0) + 1;
-        }
-      } catch (e) {
-        estadisticas.paises['Desconocido'] = (estadisticas.paises['Desconocido'] || 0) + 1;
+    // --- CAMBIAR ENTRE VISTA DE VIDEOS Y FOTOS ---
+    function cambiarVista(vista) {
+      vistaActual = vista;
+      document.getElementById('btn-nav-inicio').classList.toggle('active', vista === 'videos');
+      document.getElementById('btn-nav-fotos').classList.toggle('active', vista === 'fotos');
+      
+      if (vista === 'videos') {
+        renderizarGrid(todosLosVideos);
+      } else {
+        renderizarGridFotos(todasLasFotos);
       }
-
-      localStorage.setItem('stats_visitas', JSON.stringify(estadisticas));
-    }
-
-    // --- CARGAR ANUNCIOS CONFIGURADOS DESDE LOCALSTORAGE ---
-    function inyectarAnunciosIndex() {
-      const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
-
-      if (anuncios.header) ejecutarScriptAnuncio('slot-ad-header', anuncios.header);
-      if (anuncios.popunder) ejecutarScriptPopunder(anuncios.popunder);
-    }
-
-    function ejecutarScriptAnuncio(contenedorId, codigoHTML) {
-      const el = document.getElementById(contenedorId);
-      if (!el || !codigoHTML) return;
-      el.innerHTML = codigoHTML;
-      const scripts = el.querySelectorAll('script');
-      scripts.forEach(oldScript => {
-        const newScript = document.createElement('script');
-        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-        oldScript.parentNode.replaceChild(newScript, oldScript);
-      });
-    }
-
-    function ejecutarScriptPopunder(codigoHTML) {
-      const divTemp = document.createElement('div');
-      divTemp.innerHTML = codigoHTML;
-      const scripts = divTemp.querySelectorAll('script');
-      scripts.forEach(oldScript => {
-        const newScript = document.createElement('script');
-        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-        if (oldScript.src) newScript.src = oldScript.src;
-        else newScript.textContent = oldScript.textContent;
-        document.head.appendChild(newScript);
-      });
     }
 
     // --- CARGAR CATEGORÍAS REGISTRADAS DESDE EL ADMIN ---
@@ -550,46 +499,57 @@
           });
         }
       } catch (e) {
-        console.log('Utilizando categorías base');
+        console.log('Categorías base cargadas.');
       }
     }
 
     // --- CARGAR VIDEOS DESDE LA API ---
     async function cargarVideos() {
       const grid = document.getElementById('contenedor-grid');
-
       try {
         const response = await fetch('/api/videos');
         if (!response.ok) throw new Error('Error en el servidor');
-
         todosLosVideos = await response.json();
 
-        if (!todosLosVideos || todosLosVideos.length === 0) {
-          grid.innerHTML = `
-            <div class="status-container">
-              <h3>No hay videos publicados todavía</h3>
-              <p>El contenido se actualizará muy pronto. ¡Vuelve a visitarnos!</p>
-            </div>`;
-          return;
+        if (vistaActual === 'videos') {
+          if (!todosLosVideos || todosLosVideos.length === 0) {
+            grid.innerHTML = `
+              <div class="status-container">
+                <h3>No hay videos publicados todavía</h3>
+                <p>El contenido se actualizará muy pronto. ¡Vuelve a visitarnos!</p>
+              </div>`;
+            return;
+          }
+          renderizarGrid(todosLosVideos);
         }
-
-        renderizarGrid(todosLosVideos);
-
       } catch (error) {
         console.error('Error al obtener los videos:', error);
-        grid.innerHTML = `
-          <div class="status-container">
-            <h3>Error de conexión con el servidor</h3>
-            <p>No pudimos obtener la lista de videos. Intenta recargar la página.</p>
-          </div>`;
+        if (vistaActual === 'videos') {
+          grid.innerHTML = `
+            <div class="status-container">
+              <h3>Error de conexión con el servidor</h3>
+              <p>No pudimos obtener la lista de videos. Intenta recargar la página.</p>
+            </div>`;
+        }
       }
     }
 
-    // --- RENDERIZAR GRID DE VIDEOS CON ANUNCIOS ---
+    // --- CARGAR FOTOS DESDE LA API ---
+    async function cargarFotos() {
+      try {
+        const response = await fetch('/api/fotos');
+        if (response.ok) {
+          todasLasFotos = await response.json();
+          if (vistaActual === 'fotos') renderizarGridFotos(todasLasFotos);
+        }
+      } catch (error) {
+        console.error('Error al obtener las fotos:', error);
+      }
+    }
+
+    // --- RENDERIZAR GRID DE VIDEOS ---
     function renderizarGrid(listaVideos) {
       const grid = document.getElementById('contenedor-grid');
-      const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
-      
       grid.innerHTML = '';
 
       if (listaVideos.length === 0) {
@@ -601,94 +561,14 @@
         return;
       }
 
-      listaVideos.forEach((vid, index) => {
+      listaVideos.forEach((vid) => {
         const tarjeta = document.createElement('a');
-        tarjeta.className = 'tarjeta-video';
+        tarjeta.className = 'tarjeta-item';
         tarjeta.href = `video.html?id=${vid._id}`;
         
         const esPopular = (vid.vistas || 0) > 10;
 
         tarjeta.innerHTML = `
           <div class="wrapper-img">
-            ${esPopular ? '<span class="badge-popular">🔥 Popular</span>' : ''}
-            <img src="${vid.urlPortada || 'https://via.placeholder.com/640x360/16181f/9ca3af?text=daddyhot.site'}" alt="${vid.titulo}" loading="lazy">
-          </div>
-          <div class="info-video">
-            <h2 class="titulo-video">${vid.titulo}</h2>
-            <div class="metricas">
-              <span class="metrica-item">👁️ ${vid.vistas || 0}</span>
-              <span class="metrica-item">👍 ${vid.likes || 0}</span>
-            </div>
-          </div>
-        `;
-        grid.appendChild(tarjeta);
-
-        if ((index + 1) % 5 === 0 && anuncios.betweenVideos) {
-          const slotAd = document.createElement('div');
-          slotAd.className = 'card-ad';
-          slotAd.id = `ad-grid-${index}`;
-          grid.appendChild(slotAd);
-          
-          setTimeout(() => ejecutarScriptAnuncio(`ad-grid-${index}`, anuncios.betweenVideos), 100);
-        }
-      });
-    }
-
-    // --- FILTRADO EN TIEMPO REAL POR BÚSQUEDA ---
-    function filtrarVideos() {
-      const query = document.getElementById('input-buscar').value.toLowerCase().trim();
-      const filtrados = todosLosVideos.filter(vid => {
-        const coincideTitulo = vid.titulo.toLowerCase().includes(query);
-        const coincideCategoria = vid.categoria ? vid.categoria.toLowerCase().includes(query) : false;
-        return coincideTitulo || coincideCategoria;
-      });
-      renderizarGrid(filtrados);
-    }
-
-    // --- FILTRADO POR CRITERIO DE ORDENAMIENTO ---
-    function filtrarCategoria(categoria, btn) {
-      document.querySelectorAll('.chip-filter').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      categoriaActual = categoria;
-
-      let copiaVideos = [...todosLosVideos];
-
-      if (categoria === 'tendencias') {
-        copiaVideos.sort((a, b) => (b.vistas || 0) - (a.vistas || 0));
-      } else if (categoria === 'recientes') {
-        copiaVideos.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
-      } else if (categoria === 'destacados') {
-        copiaVideos.sort((a, b) => (b.likes || 0) - (a.likes || 0));
-      }
-
-      renderizarGrid(copiaVideos);
-    }
-
-    // --- FILTRADO POR CATEGORÍA DEL ADMIN ---
-    function filtrarPorCategoriaEspecifica(nombreCategoria, btn) {
-      document.querySelectorAll('.chip-filter').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      const filtrados = todosLosVideos.filter(vid => 
-        vid.categoria && vid.categoria.toLowerCase() === nombreCategoria.toLowerCase()
-      );
-      renderizarGrid(filtrados);
-    }
-
-    // --- DESPLAZAR A BARRA DE CATEGORÍAS ---
-    function enfocarCategorias() {
-      const barra = document.getElementById('barra-categorias');
-      if (barra) {
-        barra.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-
-    // Inicialización al cargar la página
-    registrarVisita();
-    inyectarAnunciosIndex();
-    cargarCategoriasAdmin();
-    cargarVideos();
-  </script>
-
-</body>
-</html>
+            ${esPopular ? '<span class="badge-tag">🔥 Popular</span>' : ''}
+            <img src="${vid.urlPortada \vert{}\vert{} 'https://via.placeholder.com/640x360/16181f/9ca3af?text=daddyhot.site'}" alt="${
