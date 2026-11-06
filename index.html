@@ -20,7 +20,7 @@
   <meta property="og:description" content="Mira los mejores videos exclusivos para adultos en alta definición.">
   <meta property="og:type" content="website">
 
-  <!-- FUENTE INTER Y ICONOS -->
+  <!-- FUENTE INTER -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -75,7 +75,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 20px;
     }
 
     .logo {
@@ -105,10 +105,37 @@
       border-radius: 4px;
     }
 
+    /* MENÚ PRINCIPAL DE NAVEGACIÓN EN ENCABEZADO */
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 20px;
+      transition: var(--transition);
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-link.active {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
     /* BÚSQUEDA Y CONTROLES */
     .search-bar {
       flex: 1;
-      max-width: 480px;
+      max-width: 380px;
       position: relative;
     }
 
@@ -137,26 +164,6 @@
       transform: translateY(-50%);
       color: var(--text-muted);
       pointer-events: none;
-    }
-
-    .btn-admin {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 8px 16px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 500;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-admin:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
     }
 
     /* CONTENEDOR PRINCIPAL */
@@ -201,23 +208,23 @@
       color: #ffffff;
     }
 
-    /* GRID DE VIDEOS RESTRUCTURADO A 2, 3 Y 5 COLUMNAS */
+    /* GRID DE VIDEOS A 2, 3 Y 5 COLUMNAS */
     .grid-videos {
       display: grid;
-      grid-template-columns: repeat(2, 1fr); /* 2 Columnas para celulares */
+      grid-template-columns: repeat(2, 1fr);
       gap: 12px;
     }
 
     @media (min-width: 640px) {
       .grid-videos {
-        grid-template-columns: repeat(3, 1fr); /* 3 Columnas para tablets */
+        grid-template-columns: repeat(3, 1fr);
         gap: 16px;
       }
     }
 
     @media (min-width: 1024px) {
       .grid-videos {
-        grid-template-columns: repeat(5, 1fr); /* 5 Columnas para ordenadores/notebooks */
+        grid-template-columns: repeat(5, 1fr);
         gap: 20px;
       }
     }
@@ -246,7 +253,7 @@
     .wrapper-img {
       position: relative;
       width: 100%;
-      padding-top: 56.25%; /* Relación 16:9 */
+      padding-top: 56.25%;
       background: #000;
       overflow: hidden;
     }
@@ -349,7 +356,7 @@
       font-size: 0.9rem;
     }
 
-    /* SKELETON LOADING ANIMATION */
+    /* SKELETON LOADING */
     .skeleton {
       background: linear-gradient(90deg, #16181f 25%, #222530 50%, #16181f 75%);
       background-size: 200% 100%;
@@ -374,23 +381,20 @@
       margin-top: auto;
     }
 
-    /* ADAPTABILIDAD MÓVIL EN HEADER */
-    @media (max-width: 640px) {
+    /* ADAPTABILIDAD MÓVIL */
+    @media (max-width: 768px) {
       .header-container {
         flex-wrap: wrap;
         padding: 12px 16px;
+      }
+      .nav-menu {
+        order: 2;
       }
       .search-bar {
         order: 3;
         width: 100%;
         max-width: 100%;
         margin-top: 6px;
-      }
-      .info-video {
-        padding: 8px;
-      }
-      .titulo-video {
-        font-size: 0.8rem;
       }
     }
   </style>
@@ -400,10 +404,17 @@
   <!-- HEADER NAVEGACIÓN -->
   <header class="header-sticky">
     <div class="header-container">
-      <a href="/" class="logo">
+      <a href="index.html" class="logo">
         <span>daddyHOT.site</span>
         <span class="badge-18">+18</span>
       </a>
+
+      <!-- NUEVO MENÚ DE NAVEGACIÓN: INICIO, FOTOS, CATEGORÍAS -->
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-link active">INICIO</a>
+        <a href="fotos.html" class="nav-link">FOTOS</a>
+        <a href="#categorias" class="nav-link" onclick="enfocarCategorias()">CATEGORÍAS</a>
+      </nav>
 
       <!-- BARRA DE BÚSQUEDA -->
       <div class="search-bar">
@@ -412,7 +423,6 @@
         </svg>
         <input type="text" id="input-buscar" placeholder="Buscar por título o categoría..." oninput="filtrarVideos()">
       </div>
-
     </div>
   </header>
 
@@ -422,12 +432,13 @@
     <!-- SLOT PUBLICIDAD HEADER -->
     <div id="slot-ad-header" style="text-align: center; margin-bottom: 20px;"></div>
 
-    <!-- FILTROS POR CATEGORÍA -->
-    <div class="categories-bar">
+    <!-- FILTROS Y BARRA DE CATEGORÍAS DINÁMICAS (ADMIN) -->
+    <div class="categories-bar" id="barra-categorias">
       <button class="chip-filter active" onclick="filtrarCategoria('todos', this)">🔥 Todos</button>
       <button class="chip-filter" onclick="filtrarCategoria('tendencias', this)">⚡ Tendencias</button>
       <button class="chip-filter" onclick="filtrarCategoria('recientes', this)">🆕 Recientes</button>
       <button class="chip-filter" onclick="filtrarCategoria('destacados', this)">⭐ Destacados</button>
+      <!-- Las categorías agregadas desde el Admin se cargarán automáticamente aquí -->
     </div>
 
     <!-- GRID DE VIDEOS -->
@@ -450,13 +461,9 @@
     let todosLosVideos = [];
     let categoriaActual = 'todos';
 
-    // --- REGISTRO DE VISITAS Y PAÍS DE ORIGEN ---
+    // --- REGISTRO DE VISITAS ---
     async function registrarVisita() {
-      let estadisticas = JSON.parse(localStorage.getItem('stats_visitas')) || {
-        historial: [],
-        paises: {}
-      };
-
+      let estadisticas = JSON.parse(localStorage.getItem('stats_visitas')) || { historial: [], paises: {} };
       estadisticas.historial.push(new Date().getTime());
 
       try {
@@ -479,19 +486,13 @@
     function inyectarAnunciosIndex() {
       const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
 
-      if (anuncios.header) {
-        ejecutarScriptAnuncio('slot-ad-header', anuncios.header);
-      }
-
-      if (anuncios.popunder) {
-        ejecutarScriptPopunder(anuncios.popunder);
-      }
+      if (anuncios.header) ejecutarScriptAnuncio('slot-ad-header', anuncios.header);
+      if (anuncios.popunder) ejecutarScriptPopunder(anuncios.popunder);
     }
 
     function ejecutarScriptAnuncio(contenedorId, codigoHTML) {
       const el = document.getElementById(contenedorId);
       if (!el || !codigoHTML) return;
-      
       el.innerHTML = codigoHTML;
       const scripts = el.querySelectorAll('script');
       scripts.forEach(oldScript => {
@@ -502,31 +503,45 @@
       });
     }
 
-    // Método seguro para inyectar el popunder de forma invisible en el <head> sin afectar la pantalla
     function ejecutarScriptPopunder(codigoHTML) {
       const divTemp = document.createElement('div');
       divTemp.innerHTML = codigoHTML;
       const scripts = divTemp.querySelectorAll('script');
-      
       scripts.forEach(oldScript => {
         const newScript = document.createElement('script');
         Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-        if (oldScript.src) {
-          newScript.src = oldScript.src;
-        } else {
-          newScript.textContent = oldScript.textContent;
-        }
+        if (oldScript.src) newScript.src = oldScript.src;
+        else newScript.textContent = oldScript.textContent;
         document.head.appendChild(newScript);
       });
     }
 
-    // --- CARGAR VIDEOS DESDE LA API (Ruta relativa /api/videos) ---
+    // --- CARGAR CATEGORÍAS REGISTRADAS DESDE EL ADMIN ---
+    async function cargarCategoriasAdmin() {
+      const barraCategorias = document.getElementById('barra-categorias');
+      try {
+        const res = await fetch('/api/categorias');
+        if (res.ok) {
+          const categorias = await res.json();
+          categorias.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'chip-filter';
+            btn.textContent = `📁 ${cat.nombre}`;
+            btn.onclick = () => filtrarPorCategoriaEspecifica(cat.nombre, btn);
+            barraCategorias.appendChild(btn);
+          });
+        }
+      } catch (e) {
+        console.log('Utilizando categorías base');
+      }
+    }
+
+    // --- CARGAR VIDEOS DESDE LA API ---
     async function cargarVideos() {
       const grid = document.getElementById('contenedor-grid');
 
       try {
         const response = await fetch('/api/videos');
-        
         if (!response.ok) throw new Error('Error en el servidor');
 
         todosLosVideos = await response.json();
@@ -590,7 +605,6 @@
         `;
         grid.appendChild(tarjeta);
 
-        // Insertar anuncio cada 5 elementos en desktop / adaptado
         if ((index + 1) % 5 === 0 && anuncios.betweenVideos) {
           const slotAd = document.createElement('div');
           slotAd.className = 'card-ad';
@@ -605,17 +619,15 @@
     // --- FILTRADO EN TIEMPO REAL POR BÚSQUEDA ---
     function filtrarVideos() {
       const query = document.getElementById('input-buscar').value.toLowerCase().trim();
-      
       const filtrados = todosLosVideos.filter(vid => {
         const coincideTitulo = vid.titulo.toLowerCase().includes(query);
         const coincideCategoria = vid.categoria ? vid.categoria.toLowerCase().includes(query) : false;
         return coincideTitulo || coincideCategoria;
       });
-
       renderizarGrid(filtrados);
     }
 
-    // --- FILTRADO POR CATEGORÍAS ---
+    // --- FILTRADO POR CRITERIO DE ORDENAMIENTO ---
     function filtrarCategoria(categoria, btn) {
       document.querySelectorAll('.chip-filter').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -634,9 +646,29 @@
       renderizarGrid(copiaVideos);
     }
 
+    // --- FILTRADO POR CATEGORÍA DEL ADMIN ---
+    function filtrarPorCategoriaEspecifica(nombreCategoria, btn) {
+      document.querySelectorAll('.chip-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filtrados = todosLosVideos.filter(vid => 
+        vid.categoria && vid.categoria.toLowerCase() === nombreCategoria.toLowerCase()
+      );
+      renderizarGrid(filtrados);
+    }
+
+    // --- DESPLAZAR A BARRA DE CATEGORÍAS ---
+    function enfocarCategorias() {
+      const barra = document.getElementById('barra-categorias');
+      if (barra) {
+        barra.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
     // Inicialización al cargar la página
     registrarVisita();
     inyectarAnunciosIndex();
+    cargarCategoriasAdmin();
     cargarVideos();
   </script>
 
