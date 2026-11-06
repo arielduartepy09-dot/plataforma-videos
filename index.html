@@ -139,6 +139,26 @@
       pointer-events: none;
     }
 
+    .btn-admin {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-admin:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
     /* CONTENEDOR PRINCIPAL */
     .main-container {
       max-width: 1320px;
@@ -181,11 +201,25 @@
       color: #ffffff;
     }
 
-    /* GRID DE VIDEOS EN 2 COLUMNAS FIJAS */
+    /* GRID DE VIDEOS RESTRUCTURADO A 2, 3 Y 5 COLUMNAS */
     .grid-videos {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
+      grid-template-columns: repeat(2, 1fr); /* 2 Columnas para celulares */
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .grid-videos {
+        grid-template-columns: repeat(3, 1fr); /* 3 Columnas para tablets */
+        gap: 16px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .grid-videos {
+        grid-template-columns: repeat(5, 1fr); /* 5 Columnas para ordenadores/notebooks */
+        gap: 20px;
+      }
     }
 
     /* TARJETA DE VIDEO */
@@ -233,20 +267,20 @@
 
     .badge-popular {
       position: absolute;
-      top: 10px;
-      left: 10px;
+      top: 8px;
+      left: 8px;
       background: rgba(229, 9, 20, 0.9);
       color: #fff;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 700;
-      padding: 4px 8px;
+      padding: 3px 6px;
       border-radius: 4px;
       text-transform: uppercase;
       backdrop-filter: blur(4px);
     }
 
     .info-video {
-      padding: 14px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -254,10 +288,10 @@
     }
 
     .titulo-video {
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      margin-bottom: 10px;
-      line-height: 1.4;
+      margin-bottom: 8px;
+      line-height: 1.3;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -266,25 +300,25 @@
     }
 
     .metricas {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 10px;
+      padding-top: 8px;
       margin-top: auto;
     }
 
     .metrica-item {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
 
     /* ANUNCIOS EN GRID */
     .card-ad {
-      min-height: 200px;
+      min-height: 180px;
       background: #000;
       border: 1px dashed rgba(255, 255, 255, 0.15);
       border-radius: var(--radius-md);
@@ -321,7 +355,7 @@
       background-size: 200% 100%;
       animation: loading 1.5s infinite;
       border-radius: var(--radius-md);
-      height: 220px;
+      height: 200px;
     }
 
     @keyframes loading {
@@ -340,7 +374,7 @@
       margin-top: auto;
     }
 
-    /* ADAPTABILIDAD MÓVIL */
+    /* ADAPTABILIDAD MÓVIL EN HEADER */
     @media (max-width: 640px) {
       .header-container {
         flex-wrap: wrap;
@@ -352,18 +386,11 @@
         max-width: 100%;
         margin-top: 6px;
       }
-      .main-container {
-        padding: 16px 12px 40px 12px;
-      }
-      .grid-videos {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
       .info-video {
-        padding: 10px;
+        padding: 8px;
       }
       .titulo-video {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -406,6 +433,7 @@
     <!-- GRID DE VIDEOS -->
     <main class="grid-videos" id="contenedor-grid">
       <!-- Skeletons durante carga -->
+      <div class="skeleton"></div>
       <div class="skeleton"></div>
       <div class="skeleton"></div>
       <div class="skeleton"></div>
@@ -474,6 +502,7 @@
       });
     }
 
+    // Método seguro para inyectar el popunder de forma invisible en el <head> sin afectar la pantalla
     function ejecutarScriptPopunder(codigoHTML) {
       const divTemp = document.createElement('div');
       divTemp.innerHTML = codigoHTML;
@@ -491,7 +520,7 @@
       });
     }
 
-    // --- CARGAR VIDEOS DESDE LA API ---
+    // --- CARGAR VIDEOS DESDE LA API (Ruta relativa /api/videos) ---
     async function cargarVideos() {
       const grid = document.getElementById('contenedor-grid');
 
@@ -561,11 +590,10 @@
         `;
         grid.appendChild(tarjeta);
 
-        // Insertar anuncio cada 4 videos (en la grilla de 2 columnas abarcará 2 celdas de ancho completo)
-        if ((index + 1) % 4 === 0 && anuncios.betweenVideos) {
+        // Insertar anuncio cada 5 elementos en desktop / adaptado
+        if ((index + 1) % 5 === 0 && anuncios.betweenVideos) {
           const slotAd = document.createElement('div');
           slotAd.className = 'card-ad';
-          slotAd.style.gridColumn = '1 / -1';
           slotAd.id = `ad-grid-${index}`;
           grid.appendChild(slotAd);
           
