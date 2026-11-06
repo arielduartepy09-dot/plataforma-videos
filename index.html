@@ -139,26 +139,6 @@
       pointer-events: none;
     }
 
-    .btn-admin {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 8px 16px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 500;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-admin:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-    }
-
     /* CONTENEDOR PRINCIPAL */
     .main-container {
       max-width: 1320px;
@@ -201,11 +181,11 @@
       color: #ffffff;
     }
 
-    /* GRID DE VIDEOS */
+    /* GRID DE VIDEOS EN 2 COLUMNAS FIJAS */
     .grid-videos {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
     }
 
     /* TARJETA DE VIDEO */
@@ -304,7 +284,7 @@
 
     /* ANUNCIOS EN GRID */
     .card-ad {
-      min-height: 240px;
+      min-height: 200px;
       background: #000;
       border: 1px dashed rgba(255, 255, 255, 0.15);
       border-radius: var(--radius-md);
@@ -341,7 +321,7 @@
       background-size: 200% 100%;
       animation: loading 1.5s infinite;
       border-radius: var(--radius-md);
-      height: 260px;
+      height: 220px;
     }
 
     @keyframes loading {
@@ -372,9 +352,18 @@
         max-width: 100%;
         margin-top: 6px;
       }
+      .main-container {
+        padding: 16px 12px 40px 12px;
+      }
       .grid-videos {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 14px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .info-video {
+        padding: 10px;
+      }
+      .titulo-video {
+        font-size: 0.85rem;
       }
     }
   </style>
@@ -485,7 +474,6 @@
       });
     }
 
-    // Método seguro para inyectar el popunder de forma invisible en el <head> sin afectar la pantalla
     function ejecutarScriptPopunder(codigoHTML) {
       const divTemp = document.createElement('div');
       divTemp.innerHTML = codigoHTML;
@@ -503,7 +491,7 @@
       });
     }
 
-    // --- CARGAR VIDEOS DESDE LA API (Ruta relativa /api/videos) ---
+    // --- CARGAR VIDEOS DESDE LA API ---
     async function cargarVideos() {
       const grid = document.getElementById('contenedor-grid');
 
@@ -566,17 +554,18 @@
           <div class="info-video">
             <h2 class="titulo-video">${vid.titulo}</h2>
             <div class="metricas">
-              <span class="metrica-item">👁️ ${vid.vistas || 0} vistas</span>
+              <span class="metrica-item">👁️ ${vid.vistas || 0}</span>
               <span class="metrica-item">👍 ${vid.likes || 0}</span>
             </div>
           </div>
         `;
         grid.appendChild(tarjeta);
 
-        // Insertar anuncio cada 4 videos
+        // Insertar anuncio cada 4 videos (en la grilla de 2 columnas abarcará 2 celdas de ancho completo)
         if ((index + 1) % 4 === 0 && anuncios.betweenVideos) {
           const slotAd = document.createElement('div');
           slotAd.className = 'card-ad';
+          slotAd.style.gridColumn = '1 / -1';
           slotAd.id = `ad-grid-${index}`;
           grid.appendChild(slotAd);
           
