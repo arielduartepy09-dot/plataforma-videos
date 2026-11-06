@@ -175,6 +175,18 @@
       flex: 1;
     }
 
+    /* SECCIÓN NATIVE BANNER ADSTERRA */
+    .adsterra-native-container {
+      width: 100%;
+      margin-bottom: 24px;
+      text-align: center;
+      min-height: 100px;
+      background: rgba(22, 24, 31, 0.5);
+      border-radius: var(--radius-md);
+      padding: 10px 0;
+      border: 1px solid var(--border-color);
+    }
+
     /* FILTROS Y CATEGORÍAS */
     .categories-bar {
       display: flex;
@@ -409,7 +421,7 @@
         <span class="badge-18">+18</span>
       </a>
 
-      <!-- NUEVO MENÚ DE NAVEGACIÓN: INICIO, FOTOS, CATEGORÍAS -->
+      <!-- MENÚ DE NAVEGACIÓN PRINCIPAL -->
       <nav class="nav-menu">
         <a href="index.html" class="nav-link active">INICIO</a>
         <a href="fotos.html" class="nav-link">FOTOS</a>
@@ -429,19 +441,25 @@
   <!-- CONTENIDO PRINCIPAL -->
   <div class="main-container">
     
-    <!-- SLOT PUBLICIDAD HEADER -->
+    <!-- SLOT PUBLICIDAD HEADER CONFIGURABLE DESDE ADMIN -->
     <div id="slot-ad-header" style="text-align: center; margin-bottom: 20px;"></div>
 
-    <!-- FILTROS Y BARRA DE CATEGORÍAS DINÁMICAS (ADMIN) -->
+    <!-- NATIVE BANNER ADSTERRA (UBICADO ANTES DE LAS CATEGORÍAS) -->
+    <div class="adsterra-native-container">
+      <script async="async" data-cfasync="false" src="https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a"></script>
+      <div id="container-301e35981b719360f0a86a0a15801a5a"></div>
+    </div>
+
+    <!-- FILTROS Y BARRA DE CATEGORÍAS DINÁMICAS (TODOS, TENDENCIAS, RECIENTES, DESTACADOS) -->
     <div class="categories-bar" id="barra-categorias">
       <button class="chip-filter active" onclick="filtrarCategoria('todos', this)">🔥 Todos</button>
       <button class="chip-filter" onclick="filtrarCategoria('tendencias', this)">⚡ Tendencias</button>
       <button class="chip-filter" onclick="filtrarCategoria('recientes', this)">🆕 Recientes</button>
       <button class="chip-filter" onclick="filtrarCategoria('destacados', this)">⭐ Destacados</button>
-      <!-- Las categorías agregadas desde el Admin se cargarán automáticamente aquí -->
+      <!-- Categorías adicionales dinámicas del Admin se cargarán aquí -->
     </div>
 
-    <!-- GRID DE VIDEOS -->
+    <!-- GRID DE VIDEOS (2 COLUMNAS MÓVIL, 3 TABLET, 5 PC) -->
     <main class="grid-videos" id="contenedor-grid">
       <!-- Skeletons durante carga -->
       <div class="skeleton"></div>
@@ -482,7 +500,7 @@
       localStorage.setItem('stats_visitas', JSON.stringify(estadisticas));
     }
 
-    // --- CARGAR ANUNCIOS Y POPUNDER ---
+    // --- CARGAR ANUNCIOS CONFIGURADOS DESDE LOCALSTORAGE ---
     function inyectarAnunciosIndex() {
       const anuncios = JSON.parse(localStorage.getItem('config_anuncios')) || {};
 
