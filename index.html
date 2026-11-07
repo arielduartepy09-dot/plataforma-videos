@@ -176,7 +176,7 @@
       flex: 1;
     }
 
-    /* GRILLA DE ADSTERRA: FORZADA ESTRICTAMENTE A 2 COLUMNAS */
+    /* GRILLA DE ADSTERRA FORZADA ESTRICTAMENTE A 2 COLUMNAS */
     .adsterra-grid-container {
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
@@ -443,12 +443,18 @@
     <!-- SLOT PUBLICIDAD HEADER GENERAL -->
     <div id="slot-ad-header" style="text-align: center; margin-bottom: 20px;"></div>
 
-    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS (DINÁMICAS MEDIANTE SCRIPT) -->
+    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS LADO A LAO -->
     <div class="adsterra-grid-container">
-      <!-- Columna Izquierda -->
-      <div class="adsterra-native-box" id="box-ad-1"></div>
-      <!-- Columna Derecha -->
-      <div class="adsterra-native-box" id="box-ad-2"></div>
+      <!-- Columna Izquierda (Primer código de Adsterra) -->
+      <div class="adsterra-native-box">
+        <script async="async" data-cfasync="false" src="https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a"></script>
+        <div id="container-301e35981b719360f0a86a0a15801a5a"></div>
+      </div>
+      <!-- Columna Derecha (Segundo código de Adsterra único) -->
+      <div class="adsterra-native-box">
+        <script async="async" data-cfasync="false" src="https://biomanos.org/21/1d2c43bf7761a5c012ae885ebfd312f7"></script>
+        <div id="container-1d2c43bf7761a5c012ae885ebfd312f7"></div>
+      </div>
     </div>
 
     <!-- FILTROS Y BARRA DE CATEGORÍAS DINÁMICAS -->
@@ -479,34 +485,6 @@
     let todosLosVideos = [];
     let todasLasFotos = [];
     let vistaActual = 'videos';
-
-    // --- INYECTAR DINÁMICAMENTE LOS DOS BANNERS DE ADSTERRA LADO A LADO ---
-    function inyectarBannersAdsterra() {
-      // Caja 1 (Izquierda)
-      const box1 = document.getElementById('box-ad-1');
-      if (box1) {
-        box1.innerHTML = '<div id="container-301e35981b719360f0a86a0a15801a5a"></div>';
-        const s1 = document.createElement('script');
-        s1.async = true;
-        s1.dataset.cfasync = "false";
-        s1.src = "https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a";
-        box1.appendChild(s1);
-      }
-
-      // Caja 2 (Derecha) - Generada de forma independiente para evitar conflicto de IDs
-      const box2 = document.getElementById('box-ad-2');
-      if (box2) {
-        box2.innerHTML = '<div id="container-301e35981b719360f0a86a0a15801a5a-right"></div>';
-        // Reemplazamos temporalmente el contenedor para que el script nativo cargue en el segundo bloque
-        const s2 = document.createElement('script');
-        s2.async = true;
-        s2.dataset.cfasync = "false";
-        s2.src = "https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a";
-        // Pequeño hack para forzar el renderizado del segundo anuncio cambiando el ID interno que busca el script si es necesario, o cargando el script duplicado
-        box2.innerHTML = '<div id="container-301e35981b719360f0a86a0a15801a5a"></div>';
-        box2.appendChild(s2);
-      }
-    }
 
     // --- CAMBIAR ENTRE VISTA DE VIDEOS Y FOTOS (GLOBAL) ---
     window.cambiarVista = function(vista) {
@@ -716,7 +694,6 @@
     };
 
     // Inicialización al cargar la página
-    inyectarBannersAdsterra();
     cargarCategoriasAdmin();
     cargarVideos();
     cargarFotos();
