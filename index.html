@@ -176,17 +176,7 @@
       flex: 1;
     }
 
-    /* BANNER 728x90 SUPERIOR */
-    .ad-banner-728-container {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 20px;
-      overflow-x: auto;
-    }
-
-    /* GRILLA DE ADSTERRA EN 2 COLUMNAS */
+    /* GRILLA DE ADSTERRA EN 2 COLUMNAS (DEBAJO DEL BUSCADOR) */
     .adsterra-grid-container {
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
@@ -356,6 +346,20 @@
       gap: 4px;
     }
 
+    /* TARJETA DE BANNER 728x90 ENTRE EL CONTENIDO */
+    .banner-row-ad {
+      grid-column: 1 / -1; /* Ocupa todo el ancho de la grilla */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+
     /* ESTADO VACÍO / ERRORES */
     .status-container {
       text-align: center;
@@ -466,21 +470,7 @@
   <!-- CONTENIDO PRINCIPAL -->
   <div class="main-container">
     
-    <!-- BANNER 728x90 SOLICITADO ANTES DE LA PUBLICIDAD NATIVA -->
-    <div class="ad-banner-728-container">
-      <script>
-        atOptions = {
-          'key' : 'd60fb5a59cab0293c532e83cbcdc2555',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      </script>
-      <script src="https://biomanos.org/22/d60fb5a59cab0293c532e83cbcdc2555"></script>
-    </div>
-
-    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS -->
+    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS (DEBAJO DEL BUSCADOR) -->
     <div class="adsterra-grid-container">
       <div class="adsterra-native-box">
         <script async="async" data-cfasync="false" src="https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a"></script>
@@ -524,6 +514,33 @@
     let todosLosVideos = [];
     let todasLasFotos = [];
     let vistaActual = 'videos';
+
+    // --- FUNCIÓN PARA CREAR EL BLOQUE PUBLICITARIO 728x90 ---
+    function crearBanner728x90() {
+      const bannerDiv = document.createElement('div');
+      bannerDiv.className = 'banner-row-ad';
+      
+      // Creamos contenedor dinámico y scripts seguros para Adsterra
+      const wrapper = document.createElement('div');
+      
+      const s1 = document.createElement('script');
+      s1.textContent = `
+        atOptions = {
+          'key' : 'd60fb5a59cab0293c532e83cbcdc2555',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 728,
+          'params' : {}
+        };
+      `;
+      
+      const s2 = document.createElement('script');
+      s2.src = "https://biomanos.org/22/d60fb5a59cab0293c532e83cbcdc2555";
+
+      bannerDiv.appendChild(s1);
+      bannerDiv.appendChild(s2);
+      return bannerDiv;
+    }
 
     // --- CAMBIAR ENTRE VISTA DE VIDEOS Y FOTOS (GLOBAL) ---
     window.cambiarVista = function(vista) {
@@ -602,7 +619,7 @@
       }
     }
 
-    // --- RENDERIZAR GRID DE VIDEOS ---
+    // --- RENDERIZAR GRID DE VIDEOS CON BANNER CADA 3 HILERAS (15 ELEMENTOS) ---
     function renderizarGrid(listaVideos) {
       const grid = document.getElementById('contenedor-grid');
       grid.innerHTML = '';
@@ -616,7 +633,7 @@
         return;
       }
 
-      listaVideos.forEach((vid) => {
+      listaVideos.forEach((vid, index) => {
         const tarjeta = document.createElement('a');
         tarjeta.className = 'tarjeta-item';
         tarjeta.href = `video.html?id=${vid._id}`;
@@ -637,10 +654,15 @@
           </div>
         `;
         grid.appendChild(tarjeta);
+
+        // Insertar banner 728x90 cada 3 hileras (15 elementos en PC de 5 columnas, adaptado)
+        if ((index + 1) % 15 === 0) {
+          grid.appendChild(crearBanner728x90());
+        }
       });
     }
 
-    // --- RENDERIZAR GRID DE FOTOS ---
+    // --- RENDERIZAR GRID DE FOTOS CON BANNER CADA 3 HILERAS ---
     function renderizarGridFotos(listaFotos) {
       const grid = document.getElementById('contenedor-grid');
       grid.innerHTML = '';
@@ -654,7 +676,7 @@
         return;
       }
 
-      listaFotos.forEach((foto) => {
+      listaFotos.forEach((foto, index) => {
         const tarjeta = document.createElement('a');
         tarjeta.className = 'tarjeta-item';
         tarjeta.href = `foto.html?id=${foto._id}`;
@@ -673,6 +695,11 @@
           </div>
         `;
         grid.appendChild(tarjeta);
+
+        // Insertar banner 728x90 cada 3 hileras horizontales
+        if ((index + 1) % 15 === 0) {
+          grid.appendChild(crearBanner728x90());
+        }
       });
     }
 
