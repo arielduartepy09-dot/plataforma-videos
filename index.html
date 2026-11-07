@@ -4,18 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- 1. TÍTULO QUE APARECE EN GOOGLE -->
   <title>HOTMEN | Plataforma de Video Streaming & Contenido Exclusivo +18</title>
 
-  <!-- 2. DESCRIPCIÓN SEO (Snippet) -->
   <meta name="description" content="Plataforma de entretenimiento para adultos. Explora nuestro catálogo de videos exclusivos en HD, lanzamientos novedosos y contenido +18 actualizado diariamente.">
 
-  <!-- 3. CLASIFICACIÓN DE EDAD Y ADULTO (+18) -->
   <meta name="rating" content="RTA-5042-1996-1400-1577-RTA" />
   <meta name="rating" content="adult" />
   <meta name="rating" content="mature" />
 
-  <!-- 4. ETIQUETAS OPEN GRAPH -->
   <meta property="og:title" content="HOTMEN | Contenido Exclusivo para Adultos +18">
   <meta property="og:description" content="Mira los mejores videos exclusivos para adultos en alta definición.">
   <meta property="og:type" content="website">
@@ -176,37 +172,33 @@
       flex: 1;
     }
 
-    /* ADAPTACIÓN DE NATIVE BANNER ADSTERRA EN GRILLA DE 2 A 5 COLUMNAS */
+    /* SECCIÓN PUBLICIDAD ADSTERRA EN 3 COLUMNAS MÓVIL */
     .adsterra-native-container {
       width: 100%;
       margin-bottom: 24px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.08);
       border-radius: var(--radius-md);
-      padding: 12px;
+      padding: 8px;
       overflow: hidden;
     }
 
-    /* Forzar que los elementos internos del Native Banner se adapten en columnas */
-    #container-301e35981b719360f0a86a0a15801a5a {
+    /* FORZAR LA GRILLA EN EL CONTENEDOR DE ADSTERRA */
+    #container-301e35981b719360f0a86a0a15801a5a, 
+    .adsterra-native-container > div {
       display: grid !important;
-      grid-template-columns: repeat(2, 1fr) !important; /* 2 columnas en celular */
-      gap: 12px !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 8px !important;
       width: 100% !important;
     }
 
-    @media (min-width: 640px) {
-      #container-301e35981b719360f0a86a0a15801a5a {
-        grid-template-columns: repeat(3, 1fr) !important; /* 3 columnas en tablet */
-        gap: 16px !important;
-      }
-    }
-
-    @media (min-width: 1024px) {
-      #container-301e35981b719360f0a86a0a15801a5a {
-        grid-template-columns: repeat(5, 1fr) !important; /* 5 columnas en PC */
-        gap: 20px !important;
-      }
+    /* Adaptar items internos del anuncio */
+    .adsterra-native-container div[id*="adsterra"],
+    .adsterra-native-container a,
+    .adsterra-native-container iframe {
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
     }
 
     /* FILTROS Y CATEGORÍAS */
@@ -287,7 +279,7 @@
     .wrapper-img {
       position: relative;
       width: 100%;
-      padding-top: 56.25%; /* Relación 16:9 */
+      padding-top: 56.25%;
       background: #000;
       overflow: hidden;
     }
@@ -454,7 +446,7 @@
     <!-- SLOT PUBLICIDAD HEADER GENERAL -->
     <div id="slot-ad-header" style="text-align: center; margin-bottom: 20px;"></div>
 
-    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA (ADAPTADO A 2 COLUMNAS EN MÓVIL) -->
+    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA (3 COLUMNAS EN CELULAR Y PC) -->
     <div class="adsterra-native-container">
       <script async="async" data-cfasync="false" src="https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a"></script>
       <div id="container-301e35981b719360f0a86a0a15801a5a"></div>
@@ -489,7 +481,7 @@
     let todasLasFotos = [];
     let vistaActual = 'videos';
 
-    // --- CAMBIAR ENTRE VISTA DE VIDEOS Y FOTOS (GLOBAL) ---
+    // --- CAMBIAR ENTRE VISTA DE VIDEOS Y FOTOS ---
     window.cambiarVista = function(vista) {
       vistaActual = vista;
       document.getElementById('btn-nav-inicio').classList.toggle('active', vista === 'videos');
@@ -640,7 +632,7 @@
       });
     }
 
-    // --- FILTRADO EN TIEMPO REAL (GLOBAL) ---
+    // --- FILTRADO EN TIEMPO REAL ---
     window.filtrarContenido = function() {
       const query = document.getElementById('input-buscar').value.toLowerCase().trim();
       
@@ -657,7 +649,7 @@
       }
     };
 
-    // --- FILTRADO POR ORDENAMIENTO (GLOBAL) ---
+    // --- FILTRADO POR ORDENAMIENTO ---
     window.filtrarCategoria = function(categoria, btn) {
       document.querySelectorAll('.chip-filter').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -676,7 +668,7 @@
       else renderizarGridFotos(lista);
     };
 
-    // --- FILTRADO POR CATEGORÍA ESPECÍFICA (GLOBAL) ---
+    // --- FILTRADO POR CATEGORÍA ESPECÍFICA ---
     window.filtrarPorCategoriaEspecifica = function(nombreCategoria, btn) {
       document.querySelectorAll('.chip-filter').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -690,7 +682,7 @@
       }
     };
 
-    // --- DESPLAZAR A CATEGORÍAS (GLOBAL) ---
+    // --- DESPLAZAR A CATEGORÍAS ---
     window.enfocarCategorias = function() {
       const barra = document.getElementById('barra-categorias');
       if (barra) barra.scrollIntoView({ behavior: 'smooth' });
