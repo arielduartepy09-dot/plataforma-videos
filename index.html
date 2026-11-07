@@ -468,10 +468,10 @@
   <script>
     let todosLosVideos = [];
     let todasLasFotos = [];
-    let vistaActual = 'videos'; // 'videos' o 'fotos'
+    let vistaActual = 'videos';
 
-    // --- CAMBIAR ENTRE VISTA DE VIDEOS Y FOTOS ---
-    function cambiarVista(vista) {
+    // --- CAMBIAR ENTRE VISTA DE VIDEOS Y FOTOS (GLOBAL) ---
+    window.cambiarVista = function(vista) {
       vistaActual = vista;
       document.getElementById('btn-nav-inicio').classList.toggle('active', vista === 'videos');
       document.getElementById('btn-nav-fotos').classList.toggle('active', vista === 'fotos');
@@ -481,7 +481,7 @@
       } else {
         renderizarGridFotos(todasLasFotos);
       }
-    }
+    };
 
     // --- CARGAR CATEGORÍAS REGISTRADAS DESDE EL ADMIN ---
     async function cargarCategoriasAdmin() {
@@ -494,7 +494,7 @@
             const btn = document.createElement('button');
             btn.className = 'chip-filter';
             btn.textContent = `📁 ${cat.nombre}`;
-            btn.onclick = () => filtrarPorCategoriaEspecifica(cat.nombre, btn);
+            btn.onclick = () => window.filtrarPorCategoriaEspecifica(cat.nombre, btn);
             barraCategorias.appendChild(btn);
           });
         }
@@ -571,4 +571,117 @@
         tarjeta.innerHTML = `
           <div class="wrapper-img">
             ${esPopular ? '<span class="badge-tag">🔥 Popular</span>' : ''}
-            <img src="${vid.urlPortada \vert{}\vert{} 'https://via.placeholder.com/640x360/16181f/9ca3af?text=daddyhot.site'}" alt="${
+            <img src="${vid.urlPortada || 'https://via.placeholder.com/640x360/16181f/9ca3af?text=daddyhot.site'}" alt="${vid.titulo}" loading="lazy">
+          </div>
+          <div class="info-item">
+            <h2 class="titulo-item">${vid.titulo}</h2>
+            <div class="metricas">
+              <span class="metrica-item">👁️ ${vid.vistas || 0}</span>
+              <span class="metrica-item">👍 ${vid.likes || 0}</span>
+            </div>
+          </div>
+        `;
+        grid.appendChild(tarjeta);
+      });
+    }
+
+    // --- RENDERIZAR GRID DE FOTOS ---
+    function renderizarGridFotos(listaFotos) {
+      const grid = document.getElementById('contenedor-grid');
+      grid.innerHTML = '';
+
+      if (listaFotos.length === 0) {
+        grid.innerHTML = `
+          <div class="status-container">
+            <h3>No hay fotos disponibles</h3>
+            <p>Se subirán nuevos álbumes y galerías muy pronto.</p>
+          </div>`;
+        return;
+      }
+
+      listaFotos.forEach((foto) => {
+        const tarjeta = document.createElement('a');
+        tarjeta.className = 'tarjeta-item';
+        tarjeta.href = `foto.html?id=${foto._id}`;
+
+        tarjeta.innerHTML = `
+          <div class="wrapper-img">
+            <span class="badge-tag" style="background: rgba(0, 150, 255, 0.9);">📷 Galería</span>
+            <img src="${foto.urlImagen || 'https://via.placeholder.com/640x360/16181f/9ca3af?text=Foto'}" alt="${foto.titulo}" loading="lazy">
+          </div>
+          <div class="info-item">
+            <h2 class="titulo-item">${foto.titulo}</h2>
+            <div class="metricas">
+              <span class="metrica-item">🖼️ ${foto.cantidadFotos || 1} Fotos</span>
+              <span class="metrica-item">❤️ ${foto.likes || 0}</span>
+            </div>
+          </div>
+        `;
+        grid.appendChild(tarjeta);
+      });
+    }
+
+    // --- FILTRADO EN TIEMPO REAL (GLOBAL) ---
+    window.filtrarContenido = function() {
+      const query = document.getElementById('input-buscar').value.toLowerCase().trim();
+      
+      if (vistaActual === 'videos') {
+        const filtrados = todosLosVideos.filter(vid => 
+          vid.titulo.toLowerCase().includes(query) || (vid.categoria && vid.categoria.toLowerCase().includes(query))
+        );
+        renderizarGrid(filtrados);
+      } else {
+        const filtrados = todasLasFotos.filter(foto => 
+          foto.titulo.toLowerCase().includes(query) || (foto.categoria && foto.categoria.toLowerCase().includes(query))
+        );
+        renderizarGridFotos(filtrados);
+      }
+    };
+
+    // --- FILTRADO POR ORDENAMIENTO (GLOBAL) ---
+    window.filtrarCategoria = function(categoria, btn) {
+      document.querySelectorAll('.chip-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      let lista = vistaActual === 'videos' ? [...todosLosVideos] : [...todasLasFotos];
+
+      if (categoria === 'tendencias') {
+        lista.sort((a, b) => (b.vistas || b.likes || 0) - (a.vistas || a.likes || 0));
+      } else if (categoria === 'recientes') {
+        lista.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+      } else if (categoria === 'destacados') {
+        lista.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+      }
+
+      if (vistaActual === 'videos') renderizarGrid(lista);
+      else renderizarGridFotos(lista);
+    };
+
+    // --- FILTRADO POR CATEGORÍA ESPECÍFICA (GLOBAL) ---
+    window.filtrarPorCategoriaEspecifica = function(nombreCategoria, btn) {
+      document.querySelectorAll('.chip-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      if (vistaActual === 'videos') {
+        const filtrados = todosLosVideos.filter(vid => vid.categoria && vid.categoria.toLowerCase() === nombreCategoria.toLowerCase());
+        renderizarGrid(filtrados);
+      } else {
+        const filtrados = todasLasFotos.filter(foto => foto.categoria && foto.categoria.toLowerCase() === nombreCategoria.toLowerCase());
+        renderizarGridFotos(filtrados);
+      }
+    };
+
+    // --- DESPLAZAR A CATEGORÍAS (GLOBAL) ---
+    window.enfocarCategorias = function() {
+      const barra = document.getElementById('barra-categorias');
+      if (barra) barra.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Inicialización al cargar la página
+    cargarCategoriasAdmin();
+    cargarVideos();
+    cargarFotos();
+  </script>
+
+</body>
+</html>
