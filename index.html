@@ -176,7 +176,7 @@
       flex: 1;
     }
 
-    /* GRILLA DE ADSTERRA EN 2 COLUMNAS (DEBAJO DEL BUSCADOR) */
+    /* GRILLA DE ADSTERRA EN 2 COLUMNAS */
     .adsterra-grid-container {
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
@@ -250,6 +250,20 @@
         grid-template-columns: repeat(5, 1fr);
         gap: 20px;
       }
+    }
+
+    /* CONTENEDOR PARA EL BANNER 728x90 DENTRO DE LA GRILLA */
+    .card-banner-728 {
+      grid-column: 1 / -1; /* Ocupa todo el ancho de la grilla */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 15px 0;
+      overflow-x: auto;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 10px;
     }
 
     /* TARJETA DE VIDEO / FOTO */
@@ -344,20 +358,6 @@
       display: flex;
       align-items: center;
       gap: 4px;
-    }
-
-    /* TARJETA DE BANNER 728x90 ENTRE EL CONTENIDO */
-    .banner-row-ad {
-      grid-column: 1 / -1; /* Ocupa todo el ancho de la grilla */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: var(--bg-surface);
-      border: 1px dashed var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      margin: 10px 0;
-      overflow-x: auto;
     }
 
     /* ESTADO VACÍO / ERRORES */
@@ -470,7 +470,7 @@
   <!-- CONTENIDO PRINCIPAL -->
   <div class="main-container">
     
-    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS (DEBAJO DEL BUSCADOR) -->
+    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS -->
     <div class="adsterra-grid-container">
       <div class="adsterra-native-box">
         <script async="async" data-cfasync="false" src="https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a"></script>
@@ -515,31 +515,33 @@
     let todasLasFotos = [];
     let vistaActual = 'videos';
 
-    // --- FUNCIÓN PARA CREAR EL BLOQUE PUBLICITARIO 728x90 ---
-    function crearBanner728x90() {
-      const bannerDiv = document.createElement('div');
-      bannerDiv.className = 'banner-row-ad';
-      
-      // Creamos contenedor dinámico y scripts seguros para Adsterra
+    // --- FUNCIÓN PARA GENERAR EL BLOQUE DE HTML DEL BANNER 728x90 ---
+    function crearBanner728x90(idUnico) {
       const wrapper = document.createElement('div');
-      
-      const s1 = document.createElement('script');
-      s1.textContent = `
-        atOptions = {
-          'key' : 'd60fb5a59cab0293c532e83cbcdc2555',
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
+      wrapper.className = 'card-banner-728';
+      wrapper.innerHTML = `
+        <div>
+          <script>
+            atOptions = {
+              'key' : 'd60fb5a59cab0293c532e83cbcdc2555',
+              'format' : 'iframe',
+              'height' : 90,
+              'width' : 728,
+              'params' : {}
+            };
+          <\/script>
+          <script src="https://biomanos.org/22/d60fb5a59cab0293c532e83cbcdc2555"><\/script>
+        </div>
       `;
-      
-      const s2 = document.createElement('script');
-      s2.src = "https://biomanos.org/22/d60fb5a59cab0293c532e83cbcdc2555";
+      return wrapper;
+    }
 
-      bannerDiv.appendChild(s1);
-      bannerDiv.appendChild(s2);
-      return bannerDiv;
+    // --- OBTENER FRECUENCIA DE ANUNCIOS SEGÚN DISPOSITIVO ---
+    function obtenerFrecuenciaAnuncio() {
+      const ancho = window.innerWidth;
+      if (ancho < 640) return 6;    // Celular: cada 6 videos
+      if (ancho < 1024) return 9;   // Tablet: cada 9 videos
+      return 15;                    // Notebook/PC: cada 15 videos
     }
 
     // --- CAMBIAR ENTRE VISTA DE VIDEOS Y FOTOS (GLOBAL) ---
@@ -619,7 +621,7 @@
       }
     }
 
-    // --- RENDERIZAR GRID DE VIDEOS CON BANNER CADA 3 HILERAS (15 ELEMENTOS) ---
+    // --- RENDERIZAR GRID DE VIDEOS CON BANNER CADA X VIDEOS ---
     function renderizarGrid(listaVideos) {
       const grid = document.getElementById('contenedor-grid');
       grid.innerHTML = '';
@@ -632,6 +634,8 @@
           </div>`;
         return;
       }
+
+      const frecuencia = obtenerFrecuenciaAnuncio();
 
       listaVideos.forEach((vid, index) => {
         const tarjeta = document.createElement('a');
@@ -655,14 +659,14 @@
         `;
         grid.appendChild(tarjeta);
 
-        // Insertar banner 728x90 cada 3 hileras (15 elementos en PC de 5 columnas, adaptado)
-        if ((index + 1) % 15 === 0) {
-          grid.appendChild(crearBanner728x90());
+        // Insertar banner 728x90 según la frecuencia establecida por dispositivo
+        if ((index + 1) % frecuencia === 0) {
+          grid.appendChild(crearBanner728x90(index));
         }
       });
     }
 
-    // --- RENDERIZAR GRID DE FOTOS CON BANNER CADA 3 HILERAS ---
+    // --- RENDERIZAR GRID DE FOTOS ---
     function renderizarGridFotos(listaFotos) {
       const grid = document.getElementById('contenedor-grid');
       grid.innerHTML = '';
@@ -676,7 +680,7 @@
         return;
       }
 
-      listaFotos.forEach((foto, index) => {
+      listaFotos.forEach((foto) => {
         const tarjeta = document.createElement('a');
         tarjeta.className = 'tarjeta-item';
         tarjeta.href = `foto.html?id=${foto._id}`;
@@ -695,11 +699,6 @@
           </div>
         `;
         grid.appendChild(tarjeta);
-
-        // Insertar banner 728x90 cada 3 hileras horizontales
-        if ((index + 1) % 15 === 0) {
-          grid.appendChild(crearBanner728x90());
-        }
       });
     }
 
