@@ -176,7 +176,17 @@
       flex: 1;
     }
 
-    /* GRILLA DE ADSTERRA FORZADA ESTRICTAMENTE A 2 COLUMNAS */
+    /* BANNER 728x90 SUPERIOR */
+    .ad-banner-728-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+
+    /* GRILLA DE ADSTERRA EN 2 COLUMNAS */
     .adsterra-grid-container {
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
@@ -381,15 +391,31 @@
       100% { background-position: -200% 0; }
     }
 
-    /* FOOTER */
+    /* FOOTER Y DESCRIPCIÓN SEO */
     footer {
       border-top: 1px solid var(--border-color);
       background: var(--bg-surface);
-      padding: 24px 20px;
+      padding: 30px 20px;
       text-align: center;
       font-size: 0.8rem;
       color: var(--text-muted);
       margin-top: auto;
+    }
+
+    .footer-description {
+      max-width: 900px;
+      margin: 0 auto 20px auto;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      text-align: justify;
+    }
+
+    .footer-description h4 {
+      color: var(--text-main);
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      text-align: center;
     }
 
     /* ADAPTABILIDAD MÓVIL */
@@ -440,17 +466,26 @@
   <!-- CONTENIDO PRINCIPAL -->
   <div class="main-container">
     
-    <!-- SLOT PUBLICIDAD HEADER GENERAL -->
-    <div id="slot-ad-header" style="text-align: center; margin-bottom: 20px;"></div>
+    <!-- BANNER 728x90 SOLICITADO ANTES DE LA PUBLICIDAD NATIVA -->
+    <div class="ad-banner-728-container">
+      <script>
+        atOptions = {
+          'key' : 'd60fb5a59cab0293c532e83cbcdc2555',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 728,
+          'params' : {}
+        };
+      </script>
+      <script src="https://biomanos.org/22/d60fb5a59cab0293c532e83cbcdc2555"></script>
+    </div>
 
-    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS LADO A LAO -->
+    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS -->
     <div class="adsterra-grid-container">
-      <!-- Columna Izquierda (Primer código de Adsterra) -->
       <div class="adsterra-native-box">
         <script async="async" data-cfasync="false" src="https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a"></script>
         <div id="container-301e35981b719360f0a86a0a15801a5a"></div>
       </div>
-      <!-- Columna Derecha (Segundo código de Adsterra único) -->
       <div class="adsterra-native-box">
         <script async="async" data-cfasync="false" src="https://biomanos.org/21/1d2c43bf7761a5c012ae885ebfd312f7"></script>
         <div id="container-1d2c43bf7761a5c012ae885ebfd312f7"></div>
@@ -476,8 +511,12 @@
     </main>
   </div>
 
-  <!-- FOOTER -->
+  <!-- FOOTER CON DESCRIPCIÓN SEO A PIE DE PÁGINA -->
   <footer>
+    <div class="footer-description">
+      <h4>Sobre daddyHOT.site</h4>
+      <p>Bienvenido a daddyHOT.site, tu plataforma líder de entretenimiento y streaming de contenido exclusivo para adultos (+18). Explora nuestra amplia selección de videos en alta definición, galerías de fotos actualizadas diariamente y las mejores categorías interactivas diseñadas para ofrecerte la más alta calidad visual y la mejor experiencia de navegación en cualquier dispositivo.</p>
+    </div>
     <p>&copy; 2026 daddyHOT.site Todos los derechos reservados. Contenido exclusivo para adultos (+18).</p>
   </footer>
 
