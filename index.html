@@ -176,17 +176,17 @@
       flex: 1;
     }
 
-    /* GRILLA ADSTERRA: FORZADA ESTRICTAMENTE A 2 COLUMNAS EN TODO DISPOSITIVO */
+    /* GRILLA DE ADSTERRA FORZADA ESTRICTAMENTE A 2 COLUMNAS */
     .adsterra-grid-container {
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
-      gap: 12px;
-      margin-bottom: 24px;
-      width: 100%;
+      gap: 12px !important;
+      width: 100% !important;
+      margin-bottom: 24px !important;
     }
 
     .adsterra-native-box {
-      width: 100%;
+      width: 100% !important;
       min-height: 100px;
       background: rgba(255, 255, 255, 0.02);
       border: 1px dashed rgba(255, 255, 255, 0.08);
@@ -231,7 +231,7 @@
       color: #ffffff;
     }
 
-    /* GRID RESTRUCTURADO (2 COLUMNAS MÓVIL, 3 TABLET, 5 ORDENADOR) */
+    /* GRID DE VIDEOS / FOTOS (2 EN MÓVIL, 3 EN TABLET, 5 EN PC) */
     .grid-content {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -276,7 +276,7 @@
     .wrapper-img {
       position: relative;
       width: 100%;
-      padding-top: 56.25%; /* Relación 16:9 */
+      padding-top: 56.25%;
       background: #000;
       overflow: hidden;
     }
@@ -443,14 +443,12 @@
     <!-- SLOT PUBLICIDAD HEADER GENERAL -->
     <div id="slot-ad-header" style="text-align: center; margin-bottom: 20px;"></div>
 
-    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS FORZADAS -->
+    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS LADO A LADO -->
     <div class="adsterra-grid-container">
-      <!-- Cuadro 1 de Adsterra -->
       <div class="adsterra-native-box">
         <script async="async" data-cfasync="false" src="https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a"></script>
         <div id="container-301e35981b719360f0a86a0a15801a5a"></div>
       </div>
-      <!-- Cuadro 2 de Adsterra (Duplicado para la 2da columna) -->
       <div class="adsterra-native-box">
         <script async="async" data-cfasync="false" src="https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a"></script>
         <div id="container-301e35981b719360f0a86a0a15801a5a-2"></div>
