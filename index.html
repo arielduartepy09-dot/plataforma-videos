@@ -176,18 +176,37 @@
       flex: 1;
     }
 
-    /* SECCIÓN PUBLICIDAD ADSTERRA NATIVE BANNER */
+    /* ADAPTACIÓN DE NATIVE BANNER ADSTERRA EN GRILLA DE 2 A 5 COLUMNAS */
     .adsterra-native-container {
       width: 100%;
       margin-bottom: 24px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 120px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px dashed rgba(255, 255, 255, 0.08);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
+      padding: 12px;
       overflow: hidden;
+    }
+
+    /* Forzar que los elementos internos del Native Banner se adapten en columnas */
+    #container-301e35981b719360f0a86a0a15801a5a {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important; /* 2 columnas en celular */
+      gap: 12px !important;
+      width: 100% !important;
+    }
+
+    @media (min-width: 640px) {
+      #container-301e35981b719360f0a86a0a15801a5a {
+        grid-template-columns: repeat(3, 1fr) !important; /* 3 columnas en tablet */
+        gap: 16px !important;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      #container-301e35981b719360f0a86a0a15801a5a {
+        grid-template-columns: repeat(5, 1fr) !important; /* 5 columnas en PC */
+        gap: 20px !important;
+      }
     }
 
     /* FILTROS Y CATEGORÍAS */
@@ -435,7 +454,7 @@
     <!-- SLOT PUBLICIDAD HEADER GENERAL -->
     <div id="slot-ad-header" style="text-align: center; margin-bottom: 20px;"></div>
 
-    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA (ANTES DE LAS CATEGORÍAS) -->
+    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA (ADAPTADO A 2 COLUMNAS EN MÓVIL) -->
     <div class="adsterra-native-container">
       <script async="async" data-cfasync="false" src="https://biomanos.org/21/301e35981b719360f0a86a0a15801a5a"></script>
       <div id="container-301e35981b719360f0a86a0a15801a5a"></div>
