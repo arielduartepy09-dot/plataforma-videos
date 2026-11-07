@@ -176,12 +176,13 @@
       flex: 1;
     }
 
-    /* GRILLA ADSTERRA EN 2 COLUMNAS (MÓVIL, TABLET Y PC) */
+    /* GRILLA ADSTERRA: FORZADA ESTRICTAMENTE A 2 COLUMNAS EN TODO DISPOSITIVO */
     .adsterra-grid-container {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
       gap: 12px;
       margin-bottom: 24px;
+      width: 100%;
     }
 
     .adsterra-native-box {
@@ -442,7 +443,7 @@
     <!-- SLOT PUBLICIDAD HEADER GENERAL -->
     <div id="slot-ad-header" style="text-align: center; margin-bottom: 20px;"></div>
 
-    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS -->
+    <!-- SECCIÓN ANUNCIOS NATIVE BANNERS DE ADSTERRA EN 2 COLUMNAS FORZADAS -->
     <div class="adsterra-grid-container">
       <!-- Cuadro 1 de Adsterra -->
       <div class="adsterra-native-box">
