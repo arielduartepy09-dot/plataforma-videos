@@ -176,7 +176,7 @@
       flex: 1;
     }
 
-    /* GRILLA DE ADSTERRA EN 2 COLUMNAS */
+    /* GRILLA DE ADSTERRA NATIVOS EN 2 COLUMNAS */
     .adsterra-grid-container {
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
@@ -254,7 +254,7 @@
 
     /* CONTENEDOR PARA EL BANNER 728x90 DENTRO DE LA GRILLA */
     .card-banner-728 {
-      grid-column: 1 / -1; /* Ocupa todo el ancho de la grilla */
+      grid-column: 1 / -1;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -515,14 +515,27 @@
     let todasLasFotos = [];
     let vistaActual = 'videos';
 
-    // --- FUNCIÓN PARA GENERAR EL BLOQUE DE HTML DEL BANNER 728x90 ---
-    function crearBanner728x90(idUnico) {
+    // --- FUNCIÓN PARA GENERAR EL BANNER 728x90 MEDIANTE IFRAME SEGURO DE ADSTERRA ---
+    function crearBanner728x90() {
       const wrapper = document.createElement('div');
       wrapper.className = 'card-banner-728';
-      wrapper.innerHTML = `
-        <div>
+      
+      // Creamos un iframe dedicado para forzar la carga correcta del banner de anuncios
+      const iframe = document.createElement('iframe');
+      iframe.width = '728';
+      iframe.height = '90';
+      iframe.style.border = 'none';
+      iframe.style.overflow = 'hidden';
+      iframe.scrolling = 'no';
+      
+      // Contenido interno del iframe con los parámetros de Adsterra
+      const contenidoIframe = `
+        <!DOCTYPE html>
+        <html>
+        <head><style>body { margin:0; padding:0; background:transparent; display:flex; justify-content:center; align-items:center; }</style></head>
+        <body>
           <script>
-            atOptions = {
+            var atOptions = {
               'key' : 'd60fb5a59cab0293c532e83cbcdc2555',
               'format' : 'iframe',
               'height' : 90,
@@ -531,8 +544,24 @@
             };
           <\/script>
           <script src="https://biomanos.org/22/d60fb5a59cab0293c532e83cbcdc2555"><\/script>
-        </div>
+        </body>
+        </html>
       `;
+      
+      wrapper.appendChild(iframe);
+      
+      // Escribimos el contenido dentro del iframe de manera segura una vez creado
+      setTimeout(() => {
+        try {
+          const doc = iframe.contentWindow.document;
+          doc.open();
+          doc.write(contenidoIframe);
+          doc.close();
+        } catch (e) {
+          console.error("Error al cargar el banner publicitario", e);
+        }
+      }, 50);
+
       return wrapper;
     }
 
@@ -661,7 +690,7 @@
 
         // Insertar banner 728x90 según la frecuencia establecida por dispositivo
         if ((index + 1) % frecuencia === 0) {
-          grid.appendChild(crearBanner728x90(index));
+          grid.appendChild(crearBanner728x90());
         }
       });
     }
@@ -731,7 +760,7 @@
       } else if (categoria === 'recientes') {
         lista.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
       } else if (categoria === 'destacados') {
-        lista.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+        lista.sort((a, b) => (b.likes || 0) - (b.likes || 0));
       }
 
       if (vistaActual === 'videos') renderizarGrid(lista);
